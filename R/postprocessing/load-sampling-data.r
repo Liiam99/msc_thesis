@@ -2,8 +2,8 @@ library(reshape2)
 library(sf)
 library(pbapply)
 
-source("./covariate-names.r")
-source("./utils.r")
+source("./postprocessing/covariate-names.r")
+source("./postprocessing/utils.r")
 
 # Updates the dominant_lc column based on the classes desired
 UpdateDominantLC = function(df, classes = GetCommonClassNames())
@@ -22,7 +22,7 @@ TidyData = function(df, classes = GetCommonClassNames(), drop.cols=NULL)
   # NA in amplitude1 means that we have no time series over the area, so remove these (though likely it's bare soil)
   # NA in evi means that we didn't have an image from the summer of year 2016. That's a lot of points to remove; but the alternative is dropping those covars altogether.
   # NA in soil or climate covars means it's over water.
-  df = df[!is.na(df$validation_id), ]
+  df = if ("validation_id" %in% colnames(df)) df[!is.na(df$validation_id), ] else df[!is.na(df$point_id), ]
   
   Before = nrow(df)
   if (is.character(drop.cols))
@@ -59,12 +59,11 @@ ReclassifyAndScale = function(df, output.classes=GetCommonClassNames())
   # Some classes are merged to other classes. Put the values into the bigger classes
   ClassMap = c(burnt="grassland",
                fallow_shifting_cultivation="crops",
-               wetland_herbaceous="grassland",
-               flooded_vegetation="grassland",
+               flooded_vegetation="wetland_herbaceous",
                lichen_and_moss="grassland",
                lichen="grassland",
-               fl.grass="grassland",
-               fl.lichen="grassland",
+               fl.grass="wetland_herbaceous",
+               fl.lichen="wetland_herbaceous",
                snow_and_ice="bare",
                snow="bare")
   
@@ -95,8 +94,8 @@ ReclassifyAndScale = function(df, output.classes=GetCommonClassNames())
 # Rename the columns of the reference dataset to match those in the IIASA 2015 dataset
 RenameReferenceData = function(df)
 {
-  NameMap = data.frame(from=c("trees", "grass", "urban", "shrub_and_scrub", "built"),
-                       to=c("tree", "grassland", "urban_built_up", "shrub", "urban_built_up"))
+  NameMap = data.frame(from=c("epoch", "subpix_mean_x", "subpix_mean_y", "trees", "grass", "urban", "shrub_and_scrub", "built"),
+                       to=c("reference_year", "centroid_x", "centroid_y", "tree", "grassland", "urban_built_up", "shrub", "urban_built_up"))
   NewNames = names(df)
   for (i in 1:nrow(NameMap))
     if (NameMap[i,"from"] %in% names(df))

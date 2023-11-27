@@ -1,7 +1,7 @@
 # Class names that are in both training and validation sets
 GetCommonClassNames = function()
 {
-  return(c("tree", "shrub", "grassland", "crops", "urban_built_up", "bare", "water"))
+  return(c("tree", "shrub", "grassland", "crops", "urban_built_up", "bare", "water", "wetland_herbaceous"))
 }
 
 GetDynamicWorldNames = function()
