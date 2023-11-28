@@ -1,4 +1,5 @@
-# Credit: https://github.com/GreatEmerald/supervised-bfast/blob/main/src/010_preprocessing/postprocess-gee-download.r
+# Credit: 
+# https://github.com/GreatEmerald/supervised-bfast/blob/main/src/010_preprocessing/postprocess-gee-download.r
 
 # Script to convert the GEE extracted points output CSVs into a compact GeoPackage
 library(sf)

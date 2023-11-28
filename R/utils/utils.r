@@ -1,3 +1,6 @@
+# Credit:
+# https://github.com/GreatEmerald/supervised-bfast/blob/main/src/utils/utils.r
+
 library(zoo)
 
 # Get all data.frame columns that have a date in it (according to the pattern)

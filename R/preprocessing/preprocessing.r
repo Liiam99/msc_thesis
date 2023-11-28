@@ -1,18 +1,18 @@
 library(dplyr)
 library(tibble)
 
-source("./postprocessing/load-sampling-data.r")
+source("../utils/load-sampling-data.r")
 
 #### Loading and combining the data. ####
 
-IIASA_path <- file.path("..", "data", "global", "IIASA_reference_data.csv")
+IIASA_path <- file.path("..", "..", "data", "global", "IIASA_reference_data.csv")
 
-WUR_change_path <- file.path("..", "data", "global", "ref_change_4year.csv")
-WUR_nochange_path <- file.path("..", "data", "global", "ref_nochange_4year_additional.csv")
+WUR_change_path <- file.path("..", "..", "data", "global", "ref_change_4year.csv")
+WUR_nochange_path <- file.path("..", "..", "data", "global", "ref_nochange_4year_additional.csv")
 
 # Burned locations from Google Earth Engine.
-IIASA_burned_path <- file.path("..", "data", "global", "IIASA_burned_sample_ids.csv")
-WUR_burned_path <- file.path("..", "data", "global", "WUR_burned_location_ids.csv")
+IIASA_burned_path <- file.path("..", "..", "data", "global", "IIASA_burned_sample_ids.csv")
+WUR_burned_path <- file.path("..", "..", "data", "global", "WUR_burned_location_ids.csv")
 
 # Loads and cleans up the IIASA data set.
 IIASA <- read.csv(IIASA_path)

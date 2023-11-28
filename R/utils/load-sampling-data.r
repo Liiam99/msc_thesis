@@ -1,9 +1,12 @@
+# Credit:
+# https://github.com/GreatEmerald/supervised-bfast/blob/main/src/utils/load-sampling-data.r
+
 library(reshape2)
 library(sf)
 library(pbapply)
 
-source("./postprocessing/covariate-names.r")
-source("./postprocessing/utils.r")
+source("../utils/covariate-names.r")
+source("../utils/utils.r")
 
 # Updates the dominant_lc column based on the classes desired
 UpdateDominantLC = function(df, classes = GetCommonClassNames())
