@@ -97,8 +97,8 @@ ReclassifyAndScale = function(df, output.classes=GetCommonClassNames())
 # Rename the columns of the reference dataset to match those in the IIASA 2015 dataset
 RenameReferenceData = function(df)
 {
-  NameMap = data.frame(from=c("epoch", "subpix_mean_x", "subpix_mean_y", "trees", "grass", "urban", "shrub_and_scrub", "built"),
-                       to=c("reference_year", "centroid_x", "centroid_y", "tree", "grassland", "urban_built_up", "shrub", "urban_built_up"))
+  NameMap = data.frame(from=c("epoch", "subpix_mean_x", "subpix_mean_y", "trees", "grass", "urban"),
+                       to=c("reference_year", "centroid_x", "centroid_y", "tree", "grassland", "urban_built_up"))
   NewNames = names(df)
   for (i in 1:nrow(NameMap))
     if (NameMap[i,"from"] %in% names(df))

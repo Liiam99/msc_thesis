@@ -29,12 +29,6 @@ WUR <- RenameReferenceData(WUR)
 WUR <- add_column(WUR, wetland_herbaceous=0, .after="water")
 WUR <- TidyData(WUR)
 
-# Removes the points labelled burned anywhere from 2015 to 2018.
-IIASA_burned <- read.csv(IIASA_burned_path)
-WUR_burned <- read.csv(WUR_burned_path)
-IIASA <- IIASA[!IIASA$sample_id %in% IIASA_burned$sample_id, ]
-WUR <- WUR[!WUR$location_id %in% WUR_burned$location_id, ]
-
 # Fuses both data sets together into one global reference data set.
 common_cols <- intersect(names(IIASA), names(WUR))
 IIASA_subset <- IIASA[common_cols]
@@ -42,7 +36,11 @@ WUR_subset <- WUR[common_cols]
 reference_data <- merge(IIASA_subset, WUR_subset, all=T)
 reference_data <- subset(reference_data, select= -burnt)
 
-
+# Removes the points labelled burned anywhere from 2015 to 2018.
+IIASA_burned <- read.csv(IIASA_burned_path)
+WUR_burned <- read.csv(WUR_burned_path)
+reference_data <- reference_data[!reference_data$sample_id %in% IIASA_burned$sample_id, ]
+reference_data <- reference_data[!reference_data$location_id %in% WUR_burned$location_id, ]
 
 #### Change and no-change determination. ####
 
@@ -54,7 +52,7 @@ fraction_changes <- reference_data %>%
   reframe(across(all_of(classes), ~c(diff(.), NA), .names = "{col}")) %>%
   na.omit() # Removes the fourth row of differences as there can only be 3 between 4 years.
 
-# Determines for each location if there is a change (1), no-change (0) or 
+# Determines for each location if there is a change (1), no-change (0) or
 # in-between (NA) according to the definitions.
 location_changes <- fraction_changes %>%
   group_by(location_id) %>%
@@ -64,7 +62,7 @@ location_changes <- fraction_changes %>%
       all(across(-1, ~. == 0)),  # All yearly total fraction changes are 0 for one location.
         0,
         ifelse(
-          any(rowSums(abs(across(-1)), na.rm = TRUE) >= 70),  # At least one total yearly fraciton difference is >= 70
+          any(rowSums(abs(across()), na.rm = TRUE)/2 >= 70),  # At least one total yearly fraction difference is >= 70 # TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           1,
           NA
         )
@@ -75,8 +73,6 @@ location_changes <- fraction_changes %>%
 
 reference_data <- merge(reference_data, location_changes)
 reference_data <- reference_data[complete.cases(reference_data$is_change), ]
-
-
 
 #### Removing breaks outside targeted date range. ####
 # https://github.com/GreatEmerald/supervised-bfast/blob/main/src/015_preprocess_dense/00_CalcTemporalIndices.r
