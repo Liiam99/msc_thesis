@@ -1,3 +1,7 @@
+library(dplyr)
+library(sf)
+library(zoo)
+
 load_SRs <- function(reference_data) {
   # Reads all layers into a single list "IIASA_SR".
   IIASA_gpkg = "../../data/global/IIASAChange20152018_Landsat8_TS.gpkg"
@@ -6,7 +10,6 @@ load_SRs <- function(reference_data) {
   
   # Reads all layers into a single list "WUR_SR".
   WUR_gpkg = "../../data/global/WURChange20152019_Landsat8_TS.gpkg"
-  SRNames = st_layers(WUR_gpkg)$name
   WUR_SR = lapply(SRNames, function(name) st_read(WUR_gpkg, layer=name, quiet=T))
   
   # Extracts the SR values for the points in the reference data from both data sets.
@@ -14,6 +17,9 @@ load_SRs <- function(reference_data) {
   WUR_SR_filtered <- lapply(WUR_SR, filter_WUR_SR, reference_data)
   
   SR <- Map(bind_rows, IIASA_SR_filtered, WUR_SR_filtered)
+  names(SR) = SRNames
+  
+  SR
 }
 
 filter_IIASA_SR <- function(IIASA_SR, reference_data) {

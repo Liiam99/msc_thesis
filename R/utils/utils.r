@@ -1,6 +1,8 @@
 # Credit:
 # https://github.com/GreatEmerald/supervised-bfast/blob/main/src/utils/utils.r
 
+library(dplyr)
+library(parsedate)
 library(zoo)
 
 # Get all data.frame columns that have a date in it (according to the pattern)
@@ -54,4 +56,26 @@ ScalePredictions = function(Predictions, LeaveZeroes = TRUE)
   # In that case we just keep them as 0%. It won't add up to 100%. Alternatively we can set it to 1/nclass.
   Predictions[is.nan(Predictions)] = if (LeaveZeroes) 0 else 100/ncol(Predictions)
   return(as.data.frame(Predictions))
+}
+
+filter_by_dates = function(SRs, earliest, latest) {
+  earliest_date <- as.Date(earliest)
+  latest_date <- as.Date(latest)
+  
+  # The first band acts as a template.
+  SR = SRs[[1]]
+  
+  # First three columns and last two columns are not dates.
+  dates_indexes <- 4:(ncol(SR) - 2)
+  dates <- names(SR)[dates_indexes]
+  col_dates <- as.Date(parse_date(dates))
+  
+  filtered_dates_indexes <- (col_dates >= earliest_date) & (col_dates <= latest_date)
+  selected_dates_indexes <- dates_indexes[filtered_dates_indexes]
+  
+  # Combines indexes to select all indexes of dates in range or non-date columns.
+  all_selected_indexes <- c(1:3, selected_dates_indexes, (ncol(SR) - 1):ncol(SR))
+  
+  # Selects for each band the non-date columns and the date columns in range.
+  SRs <- lapply(SRs, select, all_of(all_selected_indexes))
 }

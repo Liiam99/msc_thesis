@@ -2,7 +2,8 @@ library(dplyr)
 library(tibble)
 
 source("../utils/load-sampling-data.r")
-source("load-surface-reflectances.r")
+source("../utils/load-surface-reflectances.r")
+source("../utils/utils.r")
 
 #### Loading and combining the data. ####
 
@@ -80,5 +81,6 @@ reference_data <- reference_data[complete.cases(reference_data$is_change), ]
 rm(fraction_changes, location_changes)
 
 SRs <- load_SRs(reference_data)
+SRs <- filter_by_dates(SRs, "2015-01-01", "2018-12-31")
 
 # https://github.com/GreatEmerald/supervised-bfast/blob/main/src/030_bfast/20_bfast-on-vis.r
