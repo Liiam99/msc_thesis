@@ -2,6 +2,7 @@ library(dplyr)
 library(tibble)
 
 source("../utils/load-sampling-data.r")
+source("load-surface-reflectances.r")
 
 #### Loading and combining the data. ####
 
@@ -43,7 +44,6 @@ reference_data <- reference_data[!reference_data$sample_id %in% IIASA_burned$sam
 reference_data <- reference_data[!reference_data$location_id %in% WUR_burned$location_id, ]
 
 #### Change and no-change determination. ####
-
 # Calculates the differences between subsequent years for each class and each location.
 classes = GetCommonClassNames()
 fraction_changes <- reference_data %>%
@@ -59,10 +59,10 @@ location_changes <- fraction_changes %>%
   filter(n() == 3) %>% # Some locations do not have four years of data.
   mutate(
     is_change = ifelse(
-      all(across(-1, ~. == 0)),  # All yearly total fraction changes are 0 for one location.
+      all(across(everything(), ~. == 0)),  # All yearly total fraction changes are 0 for one location.
         0,
         ifelse(
-          any(rowSums(abs(across()), na.rm = TRUE)/2 >= 70),  # At least one total yearly fraction difference is >= 70 # TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          any(rowSums(abs(across(everything())), na.rm = TRUE)/2 >= 70),  # At least one total yearly fraction change is >= 70 
           1,
           NA
         )
@@ -71,14 +71,10 @@ location_changes <- fraction_changes %>%
   select(location_id, is_change) %>%
   distinct()
 
+# Removes the locations that do not conform to the definitions.
 reference_data <- merge(reference_data, location_changes)
 reference_data <- reference_data[complete.cases(reference_data$is_change), ]
 
-#### Removing breaks outside targeted date range. ####
-# https://github.com/GreatEmerald/supervised-bfast/blob/main/src/015_preprocess_dense/00_CalcTemporalIndices.r
-# Copy the code but remove the features I don't want and add the VIs that should be added.
-# ALl data point, no convolutions!
-
-# Remove the unused points from the GPKG?
+SRs <- load_SRs(reference_data)
 
 # https://github.com/GreatEmerald/supervised-bfast/blob/main/src/030_bfast/20_bfast-on-vis.r
