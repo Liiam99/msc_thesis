@@ -24,6 +24,7 @@ WUR_change <- read.csv(WUR_change_path)
 WUR_change <- subset(WUR_change, select= -c(incl.p_com, des_weight))
 WUR_nochange <- read.csv(WUR_nochange_path)
 WUR <- rbind(WUR_change, WUR_nochange)
+rm(WUR_change, WUR_nochange)
 
 # Renames and cleans the WUR data.
 WUR <- RenameReferenceData(WUR)
@@ -36,12 +37,14 @@ IIASA_subset <- IIASA[common_cols]
 WUR_subset <- WUR[common_cols]
 reference_data <- merge(IIASA_subset, WUR_subset, all=T)
 reference_data <- subset(reference_data, select= -burnt)
+rm(IIASA, IIASA_subset, WUR, WUR_subset)
 
 # Removes the points labelled burned anywhere from 2015 to 2018.
 IIASA_burned <- read.csv(IIASA_burned_path)
 WUR_burned <- read.csv(WUR_burned_path)
 reference_data <- reference_data[!reference_data$sample_id %in% IIASA_burned$sample_id, ]
 reference_data <- reference_data[!reference_data$location_id %in% WUR_burned$location_id, ]
+rm(IIASA_burned, WUR_burned)
 
 #### Change and no-change determination. ####
 # Calculates the differences between subsequent years for each class and each location.
@@ -74,6 +77,7 @@ location_changes <- fraction_changes %>%
 # Removes the locations that do not conform to the definitions.
 reference_data <- merge(reference_data, location_changes)
 reference_data <- reference_data[complete.cases(reference_data$is_change), ]
+rm(fraction_changes, location_changes)
 
 SRs <- load_SRs(reference_data)
 

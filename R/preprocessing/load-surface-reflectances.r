@@ -16,19 +16,19 @@ load_SRs <- function(reference_data) {
   SR <- Map(bind_rows, IIASA_SR_filtered, WUR_SR_filtered)
 }
 
-filter_IIASA_SR <- function(df, reference_data) {
-  df$sample_id <- as.integer(df$sample_id)
+filter_IIASA_SR <- function(IIASA_SR, reference_data) {
+  IIASA_SR$sample_id <- as.integer(IIASA_SR$sample_id)
   
-  df_filtered <- df %>%
+  IIASA_SR_filtered <- IIASA_SR %>%
     filter(sample_id %in% reference_data$sample_id) %>%
     left_join(reference_data %>% select(location_id, sample_id), by="sample_id") %>%
     select(-sample_id) %>%
     relocate(location_id)
 }
 
-filter_WUR_SR <- function(df, reference_data) {
-  df$location_id <- as.integer(df$location_id)
-  df_filtered <- df %>%
+filter_WUR_SR <- function(WUR_SR, reference_data) {
+  WUR_SR$location_id <- as.integer(WUR_SR$location_id)
+  WUR_SR_filtered <- WUR_SR %>%
     filter(location_id %in% reference_data$location_id) %>%
     left_join(reference_data %>% select(location_id, centroid_x, centroid_y), by="location_id") %>%
     select(-sample_x, -sample_y) %>%
