@@ -65,8 +65,7 @@ filter_by_dates = function(SRs, earliest, latest) {
   # The first band acts as a template.
   SR = SRs[[1]]
   
-  # First three columns and last two columns are not dates.
-  dates_indexes <- 4:(ncol(SR) - 2)
+  dates_indexes <- datecols(SR)
   dates <- names(SR)[dates_indexes]
   col_dates <- as.Date(parse_date(dates))
   

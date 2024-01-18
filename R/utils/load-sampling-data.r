@@ -5,8 +5,8 @@ library(reshape2)
 library(sf)
 library(pbapply)
 
-source("../utils/covariate-names.r")
-source("../utils/utils.r")
+source("./R/utils/covariate-names.r")
+source("./R/utils/utils.r")
 
 # Updates the dominant_lc column based on the classes desired
 UpdateDominantLC = function(df, classes = GetCommonClassNames())
