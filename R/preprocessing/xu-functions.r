@@ -3,6 +3,7 @@ library(dplyr)
 library(lubridate)
 library(pbapply)
 
+source("./R/preprocessing/load-surface-reflectances.r")
 source("./R/utils/utils.r")
 
 filter_changes <- function(reference_data) {
@@ -43,8 +44,21 @@ filter_changes <- function(reference_data) {
 }
 
 remove_sites_with_breaks <- function(reference_data, start, end) {
-  NIRv = st_read("./data/global/processed/temporal_indices/NIRv.gpkg", quiet=T)
+  SRs <- load_SRs(reference_data)
   
+  # Saves a template to include location id and proper date notations.
+  Template = SRs[[1]]
+  names(Template)[datecols(Template)] = strtrim(names(Template)[datecols(Template)], 11)
+  
+  # Converts into a zoo matrix.
+  SRZ = lapply(lapply(SRs, SFToMatrix), MatrixToZoo)
+  NIR = SRZ[["SR_B5"]]
+  RED = SRZ[["SR_B4"]]
+  
+  NIRvz = ((NIR - RED)/(NIR + RED))*NIR
+  NIRv = ZooToSF(NIRvz, OutTemplate)
+  
+  # Breakpoints are in decimal date form.
   start_decimal <- decimal_date(start)
   end_decimal <- decimal_date(end)
   
@@ -53,28 +67,21 @@ remove_sites_with_breaks <- function(reference_data, start, end) {
     NIRvTS = window(NIRvTS, start=as.Date("2015-01-01"), end=as.Date("2018-12-31"))
     InData = ts(as.ts(as.zoo(NIRvTS[,1])), start=c(2015, 1), frequency = 365.25/16)
     
-    # Run model
     breaks = try(bfastlite(InData, h=0.33), silent=T)
     if (class(breaks) != "bfastlite") {
       return(NULL)
     }
-    
-    # Only return location id if there is a break outside the targeted date range.
-    
-    # Check for breaks
-    # Check if break happened before start or after end
-    #    if yes, remove location id from the reference_data (ALL ROWS)
-    
+
     breakpoints = breaks$breakpoints$breakpoints
     
     if (is.na(breakpoints[1])) {
       return(NULL)
     }
     
+    # Makes a vector with dates of the time series.
     dates.no.na <- as.numeric(time(InData))
     dates.no.na[is.na(InData)] <- NA
     dates.no.na <- na.omit(dates.no.na)
-
     
     for (breakpoint in breakpoints) {
       breakpoint_date <- dates.no.na[breakpoint]
@@ -88,5 +95,8 @@ remove_sites_with_breaks <- function(reference_data, start, end) {
     return(NULL)
   }
   
-  locations_with_breaks = pblapply(unique(reference_data$location_id), BFL)
+  # Removes locations that contain a break outside the targeted date range.
+  locations_with_breaks <- pblapply(unique(reference_data$location_id), BFL, cl=10)
+  locations_with_breaks <- locations_with_breaks[lengths(locations_with_breaks) != 0]
+  reference_data <- reference_data[!reference_data$location_id %in% locations_with_breaks, ]
 }
