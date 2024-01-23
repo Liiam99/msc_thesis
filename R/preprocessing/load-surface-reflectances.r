@@ -1,6 +1,4 @@
 library(dplyr)
-library(sf)
-library(zoo)
 
 load_SRs <- function(reference_data) {
   # Reads all layers into a single list "IIASA_SR".

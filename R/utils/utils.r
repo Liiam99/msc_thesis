@@ -57,24 +57,3 @@ ScalePredictions = function(Predictions, LeaveZeroes = TRUE)
   Predictions[is.nan(Predictions)] = if (LeaveZeroes) 0 else 100/ncol(Predictions)
   return(as.data.frame(Predictions))
 }
-
-filter_by_dates = function(SRs, earliest, latest) {
-  earliest_date <- as.Date(earliest)
-  latest_date <- as.Date(latest)
-  
-  # The first band acts as a template.
-  SR = SRs[[1]]
-  
-  dates_indexes <- datecols(SR)
-  dates <- names(SR)[dates_indexes]
-  col_dates <- as.Date(parse_date(dates))
-  
-  filtered_dates_indexes <- (col_dates >= earliest_date) & (col_dates <= latest_date)
-  selected_dates_indexes <- dates_indexes[filtered_dates_indexes]
-  
-  # Combines indexes to select all indexes of dates in range or non-date columns.
-  all_selected_indexes <- c(1:3, selected_dates_indexes, (ncol(SR) - 1):ncol(SR))
-  
-  # Selects for each band the non-date columns and the date columns in range.
-  SRs <- lapply(SRs, select, all_of(all_selected_indexes))
-}

@@ -1,61 +1,12 @@
-library(dplyr)
 library(parallel)
 library(tibble)
 
-source("./R/preprocessing/xu-functions.r")
-source("./R/utils/load-sampling-data.r")
-source("./R/utils/utils.r")
-
-load_data <- function() {
-  IIASA_path <- "./data/global/raw/IIASA_reference_data.csv"
-  
-  WUR_change_path <- "./data/global/raw/ref_change_4year.csv"
-  WUR_nochange_path <-"./data/global/raw/ref_nochange_4year_additional.csv"
-  
-  # Burned locations from Google Earth Engine.
-  IIASA_burned_path <- "./data/global/raw/IIASA_burned_sample_ids.csv"
-  WUR_burned_path <- "./data/global/raw/WUR_burned_location_ids.csv"
-  
-  # Loads and cleans up the IIASA data set.
-  IIASA <- read.csv(IIASA_path)
-  IIASA <- TidyData(IIASA)
-  
-  # Combines the no-changes and the changes into one WUR data set.
-  WUR_change <- read.csv(WUR_change_path)
-  WUR_change <- subset(WUR_change, select= -c(incl.p_com, des_weight))
-  WUR_nochange <- read.csv(WUR_nochange_path)
-  WUR <- rbind(WUR_change, WUR_nochange)
-  rm(WUR_change, WUR_nochange)
-  
-  # Renames and cleans the WUR data.
-  WUR <- RenameReferenceData(WUR)
-  WUR <- add_column(WUR, wetland_herbaceous=0, .after="water")
-  WUR <- TidyData(WUR)
-  
-  # Fuses both data sets together into one global reference data set.
-  common_cols <- intersect(names(IIASA), names(WUR))
-  IIASA_subset <- IIASA[common_cols]
-  WUR_subset <- WUR[common_cols]
-  reference_data <- merge(IIASA_subset, WUR_subset, all=T)
-  reference_data <- subset(reference_data, select= -burnt)
-  rm(IIASA, IIASA_subset, WUR, WUR_subset)
-  
-  # Removes the points labelled burned anywhere from 2015 to 2018.
-  IIASA_burned <- read.csv(IIASA_burned_path)
-  WUR_burned <- read.csv(WUR_burned_path)
-  reference_data <- reference_data[!reference_data$sample_id %in% IIASA_burned$sample_id, ]
-  reference_data <- reference_data[!reference_data$location_id %in% WUR_burned$location_id, ]
-  rm(IIASA_burned, WUR_burned)
-  
-  reference_data <- filter_changes(reference_data)
-}
-
-calc_base_features <- function() {
+calc_base_features <- function(start, end) {
   VI_names = c("NDVI", "NIRv", "NDMI", "EVI", "MNDWI")
   
   l <- expand.grid(VIname=VI_names, segment_size=6, stringsAsFactors=FALSE)
-  RollingStats = do.call(mcmapply, c(FUN=calc_segments_sums_of_changes, as.list(l), mc.cores=10))
-
+  RollingStats = do.call(mcmapply, c(FUN=calc_segments_sums_of_changes, as.list(l), start=start, end=end, mc.cores=10))
+  
   # Creates a list of dataframes of VIs.
   VIs <- split_matrix(RollingStats)
   
@@ -64,7 +15,7 @@ calc_base_features <- function() {
   
   base_features <- reference_data %>%
     distinct(location_id, is_change)
-
+  
   # Adds all columns including a prefix with the VI name.
   for (i in seq_along(VI_metrics)) {
     base_features <- add_columns(base_features, names(VI_metrics)[i], VI_metrics[[i]])
@@ -73,9 +24,9 @@ calc_base_features <- function() {
   return(base_features)
 }
 
-calc_segments_sums_of_changes <- function(VIname=VIs, segment_size=6, OutFile="./data/global/processed/temporal_indices/") {
-  OutName = paste0(OutFile, "_", paste(VIname, segment_size, sep="_"), ".gpkg")
+calc_segments_sums_of_changes <- function(VIname=VIs, start, end, segment_size=6, OutFile="./data/global/processed/temporal_indices/") {
   VIzoo = SFToZoo(st_read(paste0(OutFile, VIname, ".gpkg")))
+  VIzoo = window(VIzoo, start=start, end=end)
   VI_stat = rollapply(VIzoo, width=segment_size, calc_segment_sum_of_change, by=segment_size, partial=TRUE, align="left")
   VI_stat = as.matrix(VI_stat) # Workaround for a bug in zoo
   
@@ -126,7 +77,7 @@ calculate_yearly_change_stats <- function(df) {
   # Splits the data frame into two halves vertically.
   year_1 <- df[, 1:year_length]
   year_2 <- df[, (year_length + 1):num_columns]
-
+  
   year_1_means <- apply(year_1, 1, safe_mean)
   year_1_mins <- apply(year_1, 1, safe_min)
   year_1_maxs <- apply(year_1, 1, safe_max)
@@ -134,11 +85,11 @@ calculate_yearly_change_stats <- function(df) {
   year_2_means <- apply(year_2, 1, safe_mean)
   year_2_mins <- apply(year_2, 1, safe_min)
   year_2_maxs <- apply(year_2, 1, safe_max)
-
+  
   yearly_change_mean <- year_1_means - year_2_means
   yearly_change_min <- year_1_mins - year_2_mins
   yearly_change_max <- year_1_maxs - year_2_maxs
-
+  
   result <- data.frame(
     yearly_change_mean=yearly_change_mean,
     yearly_change_min=yearly_change_min,
