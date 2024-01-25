@@ -2,6 +2,7 @@ library(bfast)
 library(dplyr)
 library(lubridate)
 library(pbapply)
+library(smotefamily)
 
 source("./R/preprocessing/load-surface-reflectances.r")
 source("./R/utils/utils.r")
@@ -56,7 +57,7 @@ remove_sites_with_breaks <- function(reference_data, start, end) {
   RED = SRZ[["SR_B4"]]
   
   NIRvz = ((NIR - RED)/(NIR + RED))*NIR
-  NIRv = ZooToSF(NIRvz, OutTemplate)
+  NIRv = ZooToSF(NIRvz, Template)
   
   # Breakpoints are in decimal date form.
   start_decimal <- decimal_date(start)
@@ -99,4 +100,13 @@ remove_sites_with_breaks <- function(reference_data, start, end) {
   locations_with_breaks <- pblapply(unique(reference_data$location_id), BFL, cl=10)
   locations_with_breaks <- locations_with_breaks[lengths(locations_with_breaks) != 0]
   reference_data <- reference_data[!reference_data$location_id %in% locations_with_breaks, ]
+}
+
+# TO DO:
+#   SMOTE interpolates location ids as well = not good
+#   Oversampling needs to always do the same so that base and full RF model are comparable
+oversample <- function(data) {
+  oversampled_data <- SMOTE(select(data, c=-(is_change)), data$is_change)$data
+  oversampled_data$is_change <- as.factor(as.factor(oversampled_data$class))
+  oversampled_data <- subset(oversampled_data, select=-c(class))
 }

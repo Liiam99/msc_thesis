@@ -1,8 +1,6 @@
-library(caret)
-library(smotefamily)
-
 # Preprocessing imports
 source("./R/preprocessing/calc-base-features.r")
+source("./R/preprocessing/calc-extra-features.r")
 source("./R/preprocessing/calc-temporal-indices.r")
 source("./R/preprocessing/load-reference-data.r")
 source("./R/preprocessing/load-surface-reflectances.r")
@@ -27,9 +25,13 @@ calc_temporal_indices(SRs)
 
 base_features <- calc_base_features(start=START, end=END)
 base_features <- na.omit(base_features)
+base_data <- oversample(base_features)
 
-# Performs oversampling on the number of changes as there are many more No Changes
-#   than changes in the dataset.
-oversampled_data <- SMOTE(select(base_features, c=-(is_change)), base_features$is_change)$data
-oversampled_data$is_change <- as.factor(as.factor(oversampled_data$class))
-oversampled_data <- subset(oversampled_data, select=-c(class))
+# calc extra features by supplying the location ids from the base features
+source("./R/preprocessing/calc-extra-features.r")
+extra_features <- calc_extra_features(base_features, start=START, end=END)
+
+#### MODELS ####
+# base rf model
+
+# full rf model

@@ -1,3 +1,5 @@
+source("./R/utils/utils.r")
+
 library(parallel)
 library(tibble)
 
@@ -6,7 +8,7 @@ calc_base_features <- function(start, end) {
   
   l <- expand.grid(VIname=VI_names, segment_size=6, stringsAsFactors=FALSE)
   RollingStats = do.call(mcmapply, c(FUN=calc_segments_sums_of_changes, as.list(l), start=start, end=end, mc.cores=10))
-  
+
   # Creates a list of dataframes of VIs.
   VIs <- split_matrix(RollingStats)
   
@@ -18,14 +20,18 @@ calc_base_features <- function(start, end) {
   
   # Adds all columns including a prefix with the VI name.
   for (i in seq_along(VI_metrics)) {
-    base_features <- add_columns(base_features, names(VI_metrics)[i], VI_metrics[[i]])
+    base_features <- add_columns(base_features, VI_metrics[[i]], names(VI_metrics)[i])
   }
   
   return(base_features)
 }
 
-calc_segments_sums_of_changes <- function(VIname=VIs, start, end, segment_size=6, OutFile="./data/global/processed/temporal_indices/") {
-  VIzoo = SFToZoo(st_read(paste0(OutFile, VIname, ".gpkg")))
+calc_segments_sums_of_changes <- function(VIname, start, end, segment_size=6, InFile="./data/global/processed/temporal_indices/") {
+  VI = st_read(paste0(InFile, VIname, ".gpkg"))
+  VI = VI %>%
+    arrange(location_id)
+  
+  VIzoo = SFToZoo(VI)
   VIzoo = window(VIzoo, start=start, end=end)
   VI_stat = rollapply(VIzoo, width=segment_size, calc_segment_sum_of_change, by=segment_size, partial=TRUE, align="left")
   VI_stat = as.matrix(VI_stat) # Workaround for a bug in zoo
@@ -102,12 +108,8 @@ calculate_yearly_change_stats <- function(df) {
   return(result)
 }
 
-add_columns <- function(df1, prefix, df2) {
+add_columns <- function(df1, df2, prefix) {
   colnames(df2) <- paste(prefix, colnames(df2), sep="_")
   
   df <- cbind(df1, df2)
 }
-
-safe_mean <- function(x) ifelse(all(is.na(x)), NA, mean(x, na.rm=TRUE))
-safe_max <- function(x) ifelse(all(is.na(x)), NA, max(x, na.rm=TRUE))
-safe_min <- function(x) ifelse(all(is.na(x)), NA, min(x, na.rm=TRUE))

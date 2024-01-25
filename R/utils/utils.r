@@ -57,3 +57,8 @@ ScalePredictions = function(Predictions, LeaveZeroes = TRUE)
   Predictions[is.nan(Predictions)] = if (LeaveZeroes) 0 else 100/ncol(Predictions)
   return(as.data.frame(Predictions))
 }
+
+safe_max <- function(x) ifelse(all(is.na(x)), NA, max(x, na.rm=TRUE))
+safe_mean <- function(x) ifelse(all(is.na(x)), NA, mean(x, na.rm=TRUE))
+safe_median <- function(x) ifelse(all(is.na(x)), NA, median(x, na.rm=TRUE))
+safe_min <- function(x) ifelse(all(is.na(x)), NA, min(x, na.rm=TRUE))
