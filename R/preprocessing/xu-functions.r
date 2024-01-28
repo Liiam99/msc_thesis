@@ -2,6 +2,7 @@ library(bfast)
 library(dplyr)
 library(lubridate)
 library(pbapply)
+library(sf)
 library(smotefamily)
 
 source("./R/preprocessing/load-surface-reflectances.r")

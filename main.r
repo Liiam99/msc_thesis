@@ -29,7 +29,8 @@ base_data <- oversample(base_features)
 
 # calc extra features by supplying the location ids from the base features
 source("./R/preprocessing/calc-extra-features.r")
-extra_features <- calc_extra_features(base_features, start=START, end=END)
+location_ids <- unique(base_features$location_id)
+extra_features <- calc_extra_features(reference_data, location_ids, start=START, end=END)
 
 #### MODELS ####
 # base rf model

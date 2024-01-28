@@ -1,7 +1,10 @@
 source("./R/utils/utils.r")
 
 library(parallel)
+library(sf)
 library(tibble)
+library(zoo)
+
 
 calc_base_features <- function(start, end) {
   VI_names = c("NDVI", "NIRv", "NDMI", "EVI", "MNDWI")
@@ -9,7 +12,7 @@ calc_base_features <- function(start, end) {
   l <- expand.grid(VIname=VI_names, segment_size=6, stringsAsFactors=FALSE)
   RollingStats = do.call(mcmapply, c(FUN=calc_segments_sums_of_changes, as.list(l), start=start, end=end, mc.cores=10))
 
-  # Creates a list of dataframes of VIs.
+  # Creates a list of data frames of VIs.
   VIs <- split_matrix(RollingStats)
   
   # Calculates the yearly change of the three proposed metrics per VI.

@@ -1,10 +1,18 @@
+# Credit to: https://github.com/GreatEmerald/postprocessing-bfast/blob/main/src/015_preprocess_dense/10_CalcTemporalHarmonics.r
+
+library(dplyr)
+library(sf)
+library(zoo)
+
+source("./R/utils/harm_utils.r")
 source("./R/utils/utils.r")
 
-calc_extra_features <- function(base_features, start, end) {
-  location_ids <- unique(base_features$location_id)
+calc_extra_features <- function(reference_data, location_ids, start, end) {
   nirv_stats <- calc_nirv_stats(location_ids, start, end)
-  #temporal_stats <- calc_temporal_stats(location_ids, start, end)
-  #spatial_stats <- calc_spatial_stats(location_ids, start, end)
+  #temporal_stats <- calc_temporal_stats(location_ids)
+  spatial_stats <- calc_spatial_stats(reference_data, location_ids)
+  
+  extra_features <- merge(nirv_stats, spatial_stats)
 }
 
 calc_nirv_stats <- function(location_ids, start, end) {
@@ -55,12 +63,46 @@ calc_nirv_stats <- function(location_ids, start, end) {
   return(NIRv_stats)
 }
 
-# harmonics function
 calc_temporal_stats <- function(location_ids) {
+  NIRv <- st_read("./data/global/processed/temporal_indices/NIRv.gpkg", quiet=T)
+  NIRv <- NIRv[NIRv$location_id %in% location_ids, ]
+  # Calculating harmonics requires three years of data.
+  NIRvz <- window(SFToZoo(NIRv), start=as.Date("2015-07-01"), end=as.Date("2018-6-30"))
   
+  out_layers = c("min", "max", "intercept", "co", "si", "co2", "si2", "trend",
+                "phase1", "amplitude1", "phase2", "amplitude2")
+  
+  # 68 observations resemble three years of data.
+  harm_coefs <- rollapply(NIRvz, width=68, GetHarmonics, partial=TRUE, coredata=FALSE)
+  
+  harm_coefs <- as.matrix(harm_coefs)
+  dim(harm_coefs) <- c(dim(NIRvz)[1], length(out_layers), dim(NIRvz)[2])
+                     
+  harm_coefs <- aperm(harm_coefs, c(1,3,2))
+  
+  missing_data <- is.na(NIRvz)
+  harm_coefs[missing_data] <- NA
+  harm_coefs[!is.finite(harm_coefs)] <- NA
+  
+  # order 1 amp
+  # order 1 sine
+  # order 1 cosine
+  # order 2 amp
+  # order 2 sine
+  
+  return(harm_coefs)
 }
 
 # location features function
-calc_spatial_stats <- function(location_ids) {
+calc_spatial_stats <- function(reference_data, location_ids) {
+  spatial_stats <- reference_data %>%
+    filter(location_id %in% location_ids) %>%
+    select(location_id, centroid_x, centroid_y) %>%
+    distinct()
   
+  spatial_stats$abs_lat <- abs(spatial_stats$centroid_y)
+  
+  spatial_stats <- rename(spatial_stats, long=centroid_x, lat=centroid_y)
+  
+  return(spatial_stats)
 }
