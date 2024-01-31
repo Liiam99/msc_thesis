@@ -8,11 +8,13 @@ source("./R/utils/harm_utils.r")
 source("./R/utils/utils.r")
 
 calc_extra_features <- function(reference_data, location_ids, start, end) {
-  nirv_stats <- calc_nirv_stats(location_ids, start, end)
-  #temporal_stats <- calc_temporal_stats(location_ids)
+  NIRv_stats <- calc_nirv_stats(location_ids, start, end)
+  temporal_stats <- calc_temporal_stats(location_ids)
   spatial_stats <- calc_spatial_stats(reference_data, location_ids)
   
-  extra_features <- merge(nirv_stats, spatial_stats)
+  # NIRV STATS CONTAIN INF VALUES, FIX THEM!!!!
+  extra_features <- merge(NIRv_stats, temporal_stats)
+  extra_features <- merge(extra_features, spatial_stats)
 }
 
 calc_nirv_stats <- function(location_ids, start, end) {
@@ -60,6 +62,8 @@ calc_nirv_stats <- function(location_ids, start, end) {
   NIRv_stats <- merge(min_change, max_change)
   NIRv_stats <- merge(NIRv_stats, median_change)
   
+  NIRv_stats[sapply(NIRv_stats, is.infinite)] <- NA
+  
   return(NIRv_stats)
 }
 
@@ -73,24 +77,18 @@ calc_temporal_stats <- function(location_ids) {
                 "phase1", "amplitude1", "phase2", "amplitude2")
   
   # 68 observations resemble three years of data.
-  harm_coefs <- rollapply(NIRvz, width=68, GetHarmonics, partial=TRUE, coredata=FALSE)
+  harm_coefs <- lapply(NIRvz, GetHarmonics)
   
-  harm_coefs <- as.matrix(harm_coefs)
-  dim(harm_coefs) <- c(dim(NIRvz)[1], length(out_layers), dim(NIRvz)[2])
-                     
-  harm_coefs <- aperm(harm_coefs, c(1,3,2))
+  temporal_stats <- data.frame(
+    names(harm_coefs),
+    bind_rows(harm_coefs),
+    row.names=NULL
+  )
+  colnames(temporal_stats)[1] <- "location_id"
   
-  missing_data <- is.na(NIRvz)
-  harm_coefs[missing_data] <- NA
-  harm_coefs[!is.finite(harm_coefs)] <- NA
-  
-  # order 1 amp
-  # order 1 sine
-  # order 1 cosine
-  # order 2 amp
-  # order 2 sine
-  
-  return(harm_coefs)
+  temporal_stats <- subset(temporal_stats, select=c("location_id", "amplitude1", 
+                                                    "co", "si", "amplitude2", 
+                                                    "si2"))
 }
 
 # location features function
@@ -103,6 +101,4 @@ calc_spatial_stats <- function(reference_data, location_ids) {
   spatial_stats$abs_lat <- abs(spatial_stats$centroid_y)
   
   spatial_stats <- rename(spatial_stats, long=centroid_x, lat=centroid_y)
-  
-  return(spatial_stats)
 }

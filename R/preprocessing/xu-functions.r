@@ -2,8 +2,8 @@ library(bfast)
 library(dplyr)
 library(lubridate)
 library(pbapply)
+library(ROSE)
 library(sf)
-library(smotefamily)
 
 source("./R/preprocessing/load-surface-reflectances.r")
 source("./R/utils/utils.r")
@@ -107,7 +107,9 @@ remove_sites_with_breaks <- function(reference_data, start, end) {
 #   SMOTE interpolates location ids as well = not good
 #   Oversampling needs to always do the same so that base and full RF model are comparable
 oversample <- function(data) {
-  oversampled_data <- SMOTE(select(data, c=-(is_change)), data$is_change)$data
-  oversampled_data$is_change <- as.factor(as.factor(oversampled_data$class))
-  oversampled_data <- subset(oversampled_data, select=-c(class))
+  data <- select(data, -location_id)
+  library(smotefamily)
+  oversampled_data <- SMOTE(data[, -1], data$is_change)$data
+  # library(ROSE)
+  # oversampled_data <- ROSE(is_change ~ . , data=data, seed=123)$data
 }

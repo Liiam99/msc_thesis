@@ -11,7 +11,7 @@ getHarmMetrics <- function(x, dates=NULL, QC_good=NULL, n_years=NA, lin_trend=T,
     attributes(p) <- NULL
     return(p)
   }
-
+  
   if(is.null(dates)){
     if (inherits(x, c("ts", "zoo"))){
       dd <- index(x)

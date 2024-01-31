@@ -23,16 +23,32 @@ reference_data <- remove_sites_with_breaks(reference_data, start=START, end=END)
 SRs <- load_SRs(reference_data)
 calc_temporal_indices(SRs)
 
+# Calculating the features for the base model.
 base_features <- calc_base_features(start=START, end=END)
 base_features <- na.omit(base_features)
+
+source("./R/preprocessing/xu-functions.r")
 base_data <- oversample(base_features)
 
-# calc extra features by supplying the location ids from the base features
-source("./R/preprocessing/calc-extra-features.r")
+# Calculating the extra features for the full model.
 location_ids <- unique(base_features$location_id)
 extra_features <- calc_extra_features(reference_data, location_ids, start=START, end=END)
+full_features <- merge(base_features, extra_features)
+full_features <- na.omit(full_features)
 
 #### MODELS ####
 # base rf model
+library(caret)
+library(MLmetrics)
+train_control <- trainControl(method="cv", number=10)
+rf <- train(class ~ ., data=base_data, trControl=train_control, nTree=100)
+
+ConfusionMatrix(base_data$class, rf$finalModel$predicted)
+print("F1")
+F1_Score(base_data$class, rf$finalModel$predicted, positive="Change")
+print("Recall")
+Recall(base_data$class, rf$finalModel$predicted, positive="Change")
+print("Precision")
+Precision(base_data$class, rf$finalModel$predicted, positive="Change")
 
 # full rf model

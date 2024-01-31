@@ -106,7 +106,7 @@ calculate_yearly_change_stats <- function(df) {
   )
   
   # Some EVI calculations can produce Inf values.
-  result[sapply(result, is.infinite)] <- NA
+  #result[sapply(result, is.infinite)] <- NA
   
   return(result)
 }
