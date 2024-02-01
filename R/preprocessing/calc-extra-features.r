@@ -76,7 +76,6 @@ calc_temporal_stats <- function(location_ids) {
   out_layers = c("min", "max", "intercept", "co", "si", "co2", "si2", "trend",
                 "phase1", "amplitude1", "phase2", "amplitude2")
   
-  # 68 observations resemble three years of data.
   harm_coefs <- lapply(NIRvz, GetHarmonics)
   
   temporal_stats <- data.frame(
@@ -91,7 +90,6 @@ calc_temporal_stats <- function(location_ids) {
                                                     "si2"))
 }
 
-# location features function
 calc_spatial_stats <- function(reference_data, location_ids) {
   spatial_stats <- reference_data %>%
     filter(location_id %in% location_ids) %>%

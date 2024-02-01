@@ -1,3 +1,5 @@
+library(caret)
+
 # Preprocessing imports
 source("./R/preprocessing/calc-base-features.r")
 source("./R/preprocessing/calc-extra-features.r")
@@ -27,9 +29,6 @@ calc_temporal_indices(SRs)
 base_features <- calc_base_features(start=START, end=END)
 base_features <- na.omit(base_features)
 
-source("./R/preprocessing/xu-functions.r")
-base_data <- oversample(base_features)
-
 # Calculating the extra features for the full model.
 location_ids <- unique(base_features$location_id)
 extra_features <- calc_extra_features(reference_data, location_ids, start=START, end=END)
@@ -37,18 +36,15 @@ full_features <- merge(base_features, extra_features)
 full_features <- na.omit(full_features)
 
 #### MODELS ####
-# base rf model
-library(caret)
-library(MLmetrics)
-train_control <- trainControl(method="cv", number=10)
-rf <- train(class ~ ., data=base_data, trControl=train_control, nTree=100)
+train_control <- trainControl(method="cv", number=10, sampling="up")
 
-ConfusionMatrix(base_data$class, rf$finalModel$predicted)
-print("F1")
-F1_Score(base_data$class, rf$finalModel$predicted, positive="Change")
-print("Recall")
-Recall(base_data$class, rf$finalModel$predicted, positive="Change")
-print("Precision")
-Precision(base_data$class, rf$finalModel$predicted, positive="Change")
+# Base Randomforest model.
+rf <- train(is_change ~ . - location_id, data=base_features, trControl=train_control, ntree=128)
+base_conf <- confusionMatrix(rf)$table
+confusionMatrix(base_conf, positive="Change", mode="everything")
 
-# full rf model
+# Full Randomforest model.
+rf <- train(is_change ~ . - location_id, data=full_features, trControl=train_control, ntree=128)
+full_conf <- confusionMatrix(rf)$table
+confusionMatrix(full_conf, positive="Change", mode="everything")
+

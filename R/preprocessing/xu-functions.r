@@ -102,14 +102,3 @@ remove_sites_with_breaks <- function(reference_data, start, end) {
   locations_with_breaks <- locations_with_breaks[lengths(locations_with_breaks) != 0]
   reference_data <- reference_data[!reference_data$location_id %in% locations_with_breaks, ]
 }
-
-# TO DO:
-#   SMOTE interpolates location ids as well = not good
-#   Oversampling needs to always do the same so that base and full RF model are comparable
-oversample <- function(data) {
-  data <- select(data, -location_id)
-  library(smotefamily)
-  oversampled_data <- SMOTE(data[, -1], data$is_change)$data
-  # library(ROSE)
-  # oversampled_data <- ROSE(is_change ~ . , data=data, seed=123)$data
-}
