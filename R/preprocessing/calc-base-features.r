@@ -50,7 +50,7 @@ calc_segment_sum_of_change <- function(values_with_dates) {
   {
     sum = NA
   } else {
-    sum = sum(diff(values))
+    sum = sum(abs(diff(values)))
   }
   
   return(sum)
@@ -104,9 +104,6 @@ calculate_yearly_change_stats <- function(df) {
     yearly_change_min=yearly_change_min,
     yearly_change_max=yearly_change_max
   )
-  
-  # Some EVI calculations can produce Inf values.
-  #result[sapply(result, is.infinite)] <- NA
   
   return(result)
 }

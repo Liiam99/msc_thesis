@@ -21,7 +21,7 @@ reference_data <- load_reference_data()
 reference_data <- filter_changes(reference_data)
 reference_data <- remove_sites_with_breaks(reference_data, start=START, end=END)
 
-# Writes the indices' values to files in ./data/global/processed/temporal_indices
+# Writes the VI values to files in ./data/global/processed/temporal_indices
 SRs <- load_SRs(reference_data)
 calc_temporal_indices(SRs)
 
@@ -38,13 +38,45 @@ full_features <- na.omit(full_features)
 #### MODELS ####
 train_control <- trainControl(method="cv", number=10, sampling="up")
 
-# Base Randomforest model.
-rf <- train(is_change ~ . - location_id, data=base_features, trControl=train_control, ntree=128)
-base_conf <- confusionMatrix(rf)$table
+# Base random forest model.
+base_rf <- train(is_change ~ . - location_id, data=base_features, trControl=train_control, ntree=128)
+base_conf <- confusionMatrix(base_rf)$table
 confusionMatrix(base_conf, positive="Change", mode="everything")
 
-# Full Randomforest model.
-rf <- train(is_change ~ . - location_id, data=full_features, trControl=train_control, ntree=128)
-full_conf <- confusionMatrix(rf)$table
+# Full random forest model.
+full_rf <- train(is_change ~ . - location_id, data=full_features, trControl=train_control, ntree=128)
+full_conf <- confusionMatrix(full_rf)$table
 confusionMatrix(full_conf, positive="Change", mode="everything")
 
+
+
+
+
+
+
+#### DEBUGGING ####
+NIRv <- st_read("./data/global/processed/temporal_indices/NIRv.gpkg")
+NIRv <- NIRv[NIRv$location_id %in% location_ids,]
+VI <- sample_n(NIRv, 1)
+VI_comp <- base_features[base_features$location_id == VI$location_id,]
+
+VIzoo = SFToZoo(VI)
+VIzoo = window(VIzoo, start=START, end=END)
+VI_stat = rollapply(VIzoo, width=6, calc_segment_sum_of_change, by=6, partial=TRUE, align="left")
+VI_stat = as.matrix(VI_stat) # Workaround for a bug in zoo
+
+calc_segment_sum_of_change <- function(values_with_dates) {
+  values = unname(values_with_dates)
+  print(values)
+  values = na.omit(values)
+
+  if (length(values) < 2)
+  {
+    sum = NA
+  } else {
+    sum = sum(abs(diff(values)))
+  }
+  print(sum)
+  print("------------------------------------")
+  return(sum)
+}
