@@ -2,114 +2,79 @@ source("./R/utils/utils.r")
 
 library(parallel)
 library(sf)
-library(tibble)
 library(zoo)
 
 
-calc_base_features <- function(start, end) {
-  VI_names = c("NDVI", "NIRv", "NDMI", "EVI", "MNDWI")
+calc_features <- function(reference_data, names=c("NDVI", "NIRv", "NDMI", "EVI", "MNDWI"), start, end) {
+  yearly_change_stats <- lapply(names, FUN=calc_metrics, start=start, end=end)
+  yearly_change_stats <- plyr::join_all(yearly_change_stats, by="location_id")
   
-  l <- expand.grid(VIname=VI_names, segment_size=6, stringsAsFactors=FALSE)
-  RollingStats = do.call(mcmapply, c(FUN=calc_segments_sums_of_changes, as.list(l), start=start, end=end, mc.cores=10))
-
-  # Creates a list of data frames of VIs.
-  VIs <- split_matrix(RollingStats)
-  
-  # Calculates the yearly change of the three proposed metrics per VI.
-  VI_metrics <- lapply(VIs, calculate_yearly_change_stats)
-  
-  base_features <- reference_data %>%
+  features <- reference_data %>%
     distinct(location_id, is_change)
-  
-  # Adds all columns including a prefix with the VI name.
-  for (i in seq_along(VI_metrics)) {
-    base_features <- add_columns(base_features, VI_metrics[[i]], names(VI_metrics)[i])
-  }
-  
-  return(base_features)
+  features <- merge(features, yearly_change_stats)
 }
 
-calc_segments_sums_of_changes <- function(VIname, start, end, segment_size=6, InFile="./data/global/processed/temporal_indices/") {
-  VI = st_read(paste0(InFile, VIname, ".gpkg"))
-  VI = VI %>%
+calc_metrics <- function(VIname, start, end, InFile="./data/global/processed/temporal_indices/") {
+  VI <- st_read(paste0(InFile, VIname, ".gpkg"), quiet=T)
+  VI <- VI %>%
     arrange(location_id)
+  VIzoo <- SFToZoo(VI)
   
-  VIzoo = SFToZoo(VI)
-  VIzoo = window(VIzoo, start=start, end=end)
-  VI_stat = rollapply(VIzoo, width=segment_size, calc_segment_sum_of_change, by=segment_size, partial=TRUE, align="left")
-  VI_stat = as.matrix(VI_stat) # Workaround for a bug in zoo
+  year_cutoff_date <- ((end - start)/2) + start
+  VIzoo_year_1 <- window(VIzoo, start=start, end=year_cutoff_date)
+  VIzoo_year_2 <- window(VIzoo, start=year_cutoff_date, end=end)
   
-  return(VI_stat)
-}
+  # Relative yearly change in VI minimum (10th percentile).
+  min_year_1 <- apply(VIzoo_year_1, 2, quantile, probs=0.1, na.rm=T, names=F)
+  min_year_2 <- apply(VIzoo_year_2, 2, quantile, probs=0.1, na.rm=T, names=F)
+  rel_yearly_min_change <- (min_year_2 - min_year_1)/min_year_1
 
-calc_segment_sum_of_change <- function(values_with_dates) {
-  values = unname(values_with_dates)
-  values = na.omit(values)
+  # Relative yearly change in VI maximum (90th percentile).
+  max_year_1 <- apply(VIzoo_year_1, 2, quantile, probs=0.9, na.rm=T, names=F)
+  max_year_2 <- apply(VIzoo_year_2, 2, quantile, probs=0.9, na.rm=T, names=F)
+  rel_yearly_max_change <- (max_year_2 - max_year_1)/max_year_1
   
-  if (length(values) < 2)
-  {
-    sum = NA
-  } else {
-    sum = sum(abs(diff(values)))
+  # Relative yearly change in VI median.
+  year_1_median <- apply(VIzoo_year_1, 2, safe_median)
+  year_2_median <- apply(VIzoo_year_2, 2, safe_median)
+  rel_yearly_median_change <- (year_2_median - year_1_median)/year_1_median
+  
+  VIzoo <- window(VIzoo, start=start, end=end)
+  VI_min <- apply(VIzoo, 2, quantile, probs=0.1, na.rm=T, names=F)
+  VI_max <- apply(VIzoo, 2, quantile, probs=0.9, na.rm=T, names=F)
+  VI_mean <- apply(VIzoo, 2, safe_mean)
+  VI_var <- apply(VIzoo, 2, var, na.rm=T)
+  
+  metrics <- list(rel_yearly_min_change=rel_yearly_min_change, 
+                  rel_yearly_max_change=rel_yearly_max_change, 
+                  rel_yearly_median_change=rel_yearly_median_change,
+                  min=VI_min,
+                  max=VI_max,
+                  mean=VI_mean,
+                  var=VI_var)
+  
+  for (i in seq_along(metrics)) {
+    metric <- metrics[[i]]
+    metric_df <- ZooToDf(metric, VIname, names(metrics)[i])
+    metrics[[i]] <- metric_df
   }
   
-  return(sum)
+  # Creates one data frame with each metrics as a column.
+  metrics <- plyr::join_all(metrics, by="location_id")
+  
+  metrics[sapply(metrics, is.infinite)] <- NA
+  
+  return(metrics)
 }
 
-split_matrix <- function(mat, num_segments=8) {
-  num_rows <- nrow(mat)
-  segment_size <- num_rows / num_segments
-  
-  # Reshapes the matrix into a 3D array.
-  mat_3d <- array(mat, dim=c(nrow(mat), ncol(mat), num_segments))
-  
-  # Converts each original matrix column to a data frame.
-  col_dfs <- lapply(1:ncol(mat), function(j) {
-    column_segments <- mat_3d[, j, ]
-    colnames(column_segments) <- paste("segment_", 1:num_segments, sep="")
-    
-    # Reshapes each column segment to have the same number of rows and same number of columns.
-    reshaped_segment <- matrix(column_segments, nrow=segment_size, ncol=num_segments, byrow=TRUE)
-    
-    as.data.frame(reshaped_segment)
-  })
-  
-  names(col_dfs) <- colnames(mat)
-  
-  return(col_dfs)
-}
-
-calculate_yearly_change_stats <- function(df) {
-  num_columns <- ncol(df)
-  year_length <- num_columns/2
-  
-  # Splits the data frame into two halves vertically.
-  year_1 <- df[, 1:year_length]
-  year_2 <- df[, (year_length + 1):num_columns]
-  
-  year_1_means <- apply(year_1, 1, safe_mean)
-  year_1_mins <- apply(year_1, 1, safe_min)
-  year_1_maxs <- apply(year_1, 1, safe_max)
-  
-  year_2_means <- apply(year_2, 1, safe_mean)
-  year_2_mins <- apply(year_2, 1, safe_min)
-  year_2_maxs <- apply(year_2, 1, safe_max)
-  
-  yearly_change_mean <- year_1_means - year_2_means
-  yearly_change_min <- year_1_mins - year_2_mins
-  yearly_change_max <- year_1_maxs - year_2_maxs
-  
-  result <- data.frame(
-    yearly_change_mean=yearly_change_mean,
-    yearly_change_min=yearly_change_min,
-    yearly_change_max=yearly_change_max
+ZooToDf <- function(zoo_obj, VIname, df_name) {
+  df <- data.frame(
+    location_id=names(zoo_obj), 
+    zoo_obj, 
+    row.names=NULL
   )
   
-  return(result)
-}
-
-add_columns <- function(df1, df2, prefix) {
-  colnames(df2) <- paste(prefix, colnames(df2), sep="_")
+  colnames(df)[2] <- paste(VIname, df_name, sep="_")
   
-  df <- cbind(df1, df2)
+  return(df)
 }

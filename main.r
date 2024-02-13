@@ -16,7 +16,7 @@ END = as.Date("2018-6-30")
 #### PREPROCESSING ####
 reference_data <- load_reference_data()
 
-# Filtering based on methods of Xu et al. (2022)
+# Filtering based on methods of Xu et al. (2022).
 # Removes sites with only fraction change between 0 and 70 in any of the years.
 reference_data <- filter_changes(reference_data)
 reference_data <- remove_sites_with_breaks(reference_data, start=START, end=END)
@@ -26,7 +26,7 @@ SRs <- load_SRs(reference_data)
 calc_temporal_indices(SRs)
 
 # Calculating the features for the base model.
-base_features <- calc_base_features(start=START, end=END)
+base_features <- calc_features(reference_data, start=START, end=END)
 base_features <- na.omit(base_features)
 
 # Calculating the extra features for the full model.
@@ -36,20 +36,32 @@ full_features <- merge(base_features, extra_features)
 full_features <- na.omit(full_features)
 
 #### MODELS ####
-train_control <- trainControl(method="cv", number=10, sampling="up")
+train_control <- trainControl(method="cv", number=10, sampling="up", preProcOptions=c(cutoff=0.5))
 
 # Base random forest model.
-base_rf <- train(is_change ~ . - location_id, data=base_features, trControl=train_control, ntree=128)
+base_rf <- train(is_change ~ . - location_id, data=base_features, trControl=train_control, ntree=128, importance=T, preProcess="corr")
 base_conf <- confusionMatrix(base_rf)$table
 confusionMatrix(base_conf, positive="Change", mode="everything")
+base_var_imp <- varImp(base_rf, type=1)
+plot(base_var_imp, top=dim(base_var_imp$importance[1]))
 
 # Full random forest model.
-full_rf <- train(is_change ~ . - location_id, data=full_features, trControl=train_control, ntree=128)
+full_rf <- train(is_change ~ . - location_id, data=full_features, trControl=train_control, ntree=128, importance=T, preProcess="corr")
 full_conf <- confusionMatrix(full_rf)$table
 confusionMatrix(full_conf, positive="Change", mode="everything")
+full_var_imp <- varImp(full_rf, type=1)
+plot(full_var_imp, top=dim(full_var_imp$importance[1]))
 
 
 
+
+
+
+
+test <- st_as_sf(x=full_features,
+                 coords=c("long", "lat"),
+                 crs="WGS84")
+st_write(test, "./kaart.gpkg", append=F)
 
 
 

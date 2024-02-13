@@ -99,15 +99,14 @@ GetHarmonics <- function(TS)
   }
 }
 
-phaser = function(co, si)
-{
+phaser = function(co, si) {
   tau = 2*pi
   result = atan2(si, co) %% tau
   names(result) = NULL
   return(result)
 }
-amplituder = function(co, si)
-{
+
+amplituder = function(co, si) {
   result = sqrt(co^2 + si^2)
   names(result) = NULL
   return(result)
