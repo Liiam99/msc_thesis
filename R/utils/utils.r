@@ -46,6 +46,18 @@ ZooToSF = function(zobj, sfobj)
   return(sfobj)
 }
 
+ZooToDf <- function(zoo_obj, VIname, df_name) {
+  df <- data.frame(
+    location_id=names(zoo_obj), 
+    zoo_obj, 
+    row.names=NULL
+  )
+  
+  colnames(df)[2] <- paste(VIname, df_name, sep="_")
+  
+  return(df)
+}
+
 # Rescale predictions so that they add up to 100%
 ScalePredictions = function(Predictions, LeaveZeroes = TRUE)
 {

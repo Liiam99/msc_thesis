@@ -1,4 +1,5 @@
 library(dplyr)
+library(tibble)
 
 source("./R/utils/load-sampling-data.r")
 source("./R/utils/utils.r")

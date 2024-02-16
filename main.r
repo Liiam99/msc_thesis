@@ -8,6 +8,10 @@ source("./R/preprocessing/load-reference-data.r")
 source("./R/preprocessing/load-surface-reflectances.r")
 source("./R/preprocessing/xu-functions.r")
 
+# Processing imports
+source("./R/processing/calc-performance-metrics.r")
+source("./R/processing/train-random-forest.r")
+
 # Select targeted date range
 # Dates must be between 2015-01-01 and 2018-12-31
 START = as.Date("2016-07-01")
@@ -26,69 +30,35 @@ SRs <- load_SRs(reference_data)
 calc_temporal_indices(SRs)
 
 # Calculating the features for the base model.
-base_features <- calc_features(reference_data, start=START, end=END)
+base_features <- calc_base_features(reference_data, start=START, end=END)
 base_features <- na.omit(base_features)
 
 # Calculating the extra features for the full model.
-location_ids <- unique(base_features$location_id)
-extra_features <- calc_extra_features(reference_data, location_ids, start=START, end=END)
+extra_features <- calc_extra_features(reference_data, start=START, end=END)
 full_features <- merge(base_features, extra_features)
 full_features <- na.omit(full_features)
 
-#### MODELS ####
-train_control <- trainControl(method="cv", number=10, sampling="up", preProcOptions=c(cutoff=0.5))
 
+
+#### MODELS ####
 # Base random forest model.
-base_rf <- train(is_change ~ . - location_id, data=base_features, trControl=train_control, ntree=128, importance=T, preProcess="corr")
+base_rf <- train_rf(base_features)
 base_conf <- confusionMatrix(base_rf)$table
-confusionMatrix(base_conf, positive="Change", mode="everything")
+base_rf_performance_metrics <- calc_performance_metrics(base_conf)
 base_var_imp <- varImp(base_rf, type=1)
 plot(base_var_imp, top=dim(base_var_imp$importance[1]))
 
 # Full random forest model.
-full_rf <- train(is_change ~ . - location_id, data=full_features, trControl=train_control, ntree=128, importance=T, preProcess="corr")
+full_rf <- train_rf(full_features)
 full_conf <- confusionMatrix(full_rf)$table
-confusionMatrix(full_conf, positive="Change", mode="everything")
+full_rf_performance_metrics <- calc_performance_metrics(full_conf)
 full_var_imp <- varImp(full_rf, type=1)
 plot(full_var_imp, top=dim(full_var_imp$importance[1]))
 
 
 
-
-
-
-
-test <- st_as_sf(x=full_features,
-                 coords=c("long", "lat"),
-                 crs="WGS84")
-st_write(test, "./kaart.gpkg", append=F)
-
-
-
-
-#### DEBUGGING ####
-NIRv <- st_read("./data/global/processed/temporal_indices/NIRv.gpkg")
-NIRv <- NIRv[NIRv$location_id %in% location_ids,]
-VI <- sample_n(NIRv, 1)
-VI_comp <- base_features[base_features$location_id == VI$location_id,]
-
-VIzoo = SFToZoo(VI)
-VIzoo = window(VIzoo, start=START, end=END)
-VI_stat = rollapply(VIzoo, width=6, calc_segment_sum_of_change, by=6, partial=TRUE, align="left")
-VI_stat = as.matrix(VI_stat) # Workaround for a bug in zoo
-
-calc_segment_sum_of_change <- function(values_with_dates) {
-  values = unname(values_with_dates)
-  print(values)
-  values = na.omit(values)
-
-  if (length(values) < 2)
-  {
-    sum = NA
-  } else {
-    sum = sum(abs(diff(values)))
-  }
-  print(sum)
-  print("------------------------------------")
-  return(sum)
-}
+#### VISUALISATION ####
+change_distribution <- st_as_sf(x=full_features,
+                                coords=c("long", "lat"),
+                                crs="WGS84")
+st_write(change_distribution, "./change_distribution.gpkg", append=F)

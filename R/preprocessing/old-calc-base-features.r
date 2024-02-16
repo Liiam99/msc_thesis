@@ -15,7 +15,7 @@ calc_base_features <- function(reference_data, start, end) {
   VIs <- split_matrix(RollingStats)
   
   # Calculates the yearly change of the three proposed metrics per VI.
-  VI_metrics <- lapply(VIs, calculate_yearly_change_stats)
+  VI_metrics <- lapply(VIs, calc_yearly_change_stats)
   
   base_features <- reference_data %>%
     distinct(location_id, is_change)
@@ -78,7 +78,7 @@ split_matrix <- function(mat, num_segments=8) {
   return(col_dfs)
 }
 
-calculate_yearly_change_stats <- function(df) {
+calc_yearly_change_stats <- function(df) {
   num_columns <- ncol(df)
   year_length <- num_columns/2
   

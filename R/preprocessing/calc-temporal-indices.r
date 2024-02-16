@@ -37,8 +37,10 @@ calc_temporal_indices = function(SRs) {
   # Reasoning for DVI: https://www.tandfonline.com/doi/full/10.1080/15481603.2020.1846948
   DVI   = function(BLUE=NULL, GREEN=NULL, RED,      NIR,  SWIR1=NULL, SWIR2=NULL)
       {return(NIR - RED)}
+  NBR =   function(BLUE=NULL, GREEN=NULL, RED=NULL, NIR,  SWIR1=NULL, SWIR2)
+      {return((NIR - SWIR2)/(NIR + SWIR2))}
   # https://www.mdpi.com/2220-9964/7/12/453 MNDBI
-  MNDBI = function(BLUE,      GREEN=NULL, RED=NULL, NIR=NULL,  SWIR1=NULL, SWIR2)
+  MNDBI = function(BLUE,     GREEN=NULL,  RED=NULL, NIR=NULL,  SWIR1=NULL, SWIR2)
       {return((SWIR2 - BLUE)/(SWIR2 + BLUE))}
   TCB   = function(BLUE,      GREEN,      RED,      NIR,  SWIR1,      SWIR2)
       {return(0.3037*BLUE + 0.2793*GREEN + 0.4743*RED + 0.5585*NIR + 0.5082*SWIR1 + 0.1863*SWIR2)}
@@ -48,7 +50,7 @@ calc_temporal_indices = function(SRs) {
       {return(0.1511*BLUE + 0.1973*GREEN + 0.3283*RED + 0.3407*NIR - 0.7117*SWIR1 - 0.4559*SWIR2)}
 
   indices_formulae = list(NDVI=NDVI, NIRv=NIRv, NDMI=NDMI, EVI=EVI, MNDWI=MNDWI, 
-                          DVI=DVI, MNDBI=MNDBI, TCB=TCB, TCG=TCG, TCW=TCW)
+                          NBR=NBR, DVI=DVI, MNDBI=MNDBI, TCB=TCB, TCG=TCG, TCW=TCW)
   
   # Writes the indices' values to disk.
   for (i in seq_along(indices_formulae)) {
