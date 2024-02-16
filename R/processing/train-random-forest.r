@@ -1,3 +1,5 @@
+library(caret)
+
 train_rf <- function(features, sampling="up", cutoff=0.5, ntree=128) {
   train_control <- trainControl(method="cv", number=10, sampling=sampling, 
                                 preProcOptions=c(cutoff=cutoff))

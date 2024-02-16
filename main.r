@@ -1,5 +1,3 @@
-library(caret)
-
 # Preprocessing imports
 source("./R/preprocessing/calc-base-features.r")
 source("./R/preprocessing/calc-extra-features.r")
@@ -43,22 +41,16 @@ full_features <- na.omit(full_features)
 #### MODELS ####
 # Base random forest model.
 base_rf <- train_rf(base_features)
-base_conf <- confusionMatrix(base_rf)$table
-base_rf_performance_metrics <- calc_performance_metrics(base_conf)
-base_var_imp <- varImp(base_rf, type=1)
-plot(base_var_imp, top=dim(base_var_imp$importance[1]))
+base_rf_performance_metrics <- calc_performance_metrics(base_rf)
 
 # Full random forest model.
 full_rf <- train_rf(full_features)
-full_conf <- confusionMatrix(full_rf)$table
-full_rf_performance_metrics <- calc_performance_metrics(full_conf)
-full_var_imp <- varImp(full_rf, type=1)
-plot(full_var_imp, top=dim(full_var_imp$importance[1]))
+full_rf_performance_metrics <- calc_performance_metrics(full_rf)
 
 
 
 #### VISUALISATION ####
-change_distribution <- st_as_sf(x=full_features,
-                                coords=c("long", "lat"),
-                                crs="WGS84")
-st_write(change_distribution, "./change_distribution.gpkg", append=F)
+# change_distribution <- st_as_sf(x=full_features,
+#                                 coords=c("long", "lat"),
+#                                 crs="WGS84")
+# st_write(change_distribution, "./change_distribution.gpkg", append=F)

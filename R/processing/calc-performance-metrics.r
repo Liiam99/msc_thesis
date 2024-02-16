@@ -1,4 +1,8 @@
-calc_performance_metrics <- function(conf_matrix) {
+library(caret)
+
+calc_performance_metrics <- function(rf_model) {
+  conf_matrix <- confusionMatrix(rf_model)$table
+  
   TN <- conf_matrix[1, 1]
   FN <- conf_matrix[1, 2]
   FP <- conf_matrix[2, 1]
@@ -12,6 +16,12 @@ calc_performance_metrics <- function(conf_matrix) {
   PA_no_change <- TN/(TN + FP)*100
   Gmean <- sqrt(PA_change*PA_no_change)
   
-  performance_metrics <- c(OA=OA, PA_change=PA_change, UA_change=UA_change, 
-                           F1_change=F1_change, Gmean=Gmean)
+  var_imp <- varImp(rf_model, type=1)
+  print(plot(var_imp, top=dim(var_imp$importance[1]), main="Relative Permutation Feature Importance"))
+  
+  performance_metrics <- c(OA=OA, 
+                           PA_change=PA_change, 
+                           UA_change=UA_change, 
+                           F1_change=F1_change, 
+                           Gmean=Gmean)
 }
