@@ -50,21 +50,30 @@ calc_temporal_indices = function(SRs) {
       {return(0.1511*BLUE + 0.1973*GREEN + 0.3283*RED + 0.3407*NIR - 0.7117*SWIR1 - 0.4559*SWIR2)}
 
   indices_formulae = list(NDVI=NDVI, NIRv=NIRv, NDMI=NDMI, EVI=EVI, MNDWI=MNDWI, 
-                          NBR=NBR, DVI=DVI, MNDBI=MNDBI, TCB=TCB, TCG=TCG, TCW=TCW)
+                          NBR=NBR, DVI=DVI, MNDBI=MNDBI)
+  
+  indices <- list()
   
   # Writes the indices' values to disk.
   for (i in seq_along(indices_formulae)) {
     index_formula = indices_formulae[[i]]
-    OutFile = paste0(Feature_GPKG, names(indices_formulae)[i], ".gpkg")
+    index_name = names(indices_formulae)[i]
+    OutFile = paste0(Feature_GPKG, index_name, ".gpkg")
     Iz = index_formula(SRZ[["SR_B2"]], SRZ[["SR_B3"]], SRZ[["SR_B4"]], SRZ[["SR_B5"]], SRZ[["SR_B6"]], SRZ[["SR_B7"]])
     Isf = ZooToSF(Iz, OutTemplate)
+    indices <- append(indices, list(Isf))
     st_write(Isf, OutFile, append=F)
   }
+  
+  names(indices) <- names(indices_formulae)
   
   # https://www.mdpi.com/2220-9964/7/12/453 TCWVI
   TCBz = TCB(SRZ[["SR_B2"]], SRZ[["SR_B3"]], SRZ[["SR_B4"]], SRZ[["SR_B5"]], SRZ[["SR_B6"]], SRZ[["SR_B7"]])
   TCGz = TCG(SRZ[["SR_B2"]], SRZ[["SR_B3"]], SRZ[["SR_B4"]], SRZ[["SR_B5"]], SRZ[["SR_B6"]], SRZ[["SR_B7"]])
   TCWVIz = (TCBz - TCGz)/(TCBz + TCGz)
   TCWVIsf = ZooToSF(TCWVIz, OutTemplate)
+  indices <- append(indices, list(TCWVI=TCWVIsf))
   st_write(TCWVIsf, paste0(Feature_GPKG, "TCWVI.gpkg"), append=F)
+  
+  return(indices)
 }

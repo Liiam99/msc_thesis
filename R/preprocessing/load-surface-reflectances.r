@@ -27,8 +27,7 @@ filter_IIASA_SRs <- function(IIASA_SRs, reference_data) {
     filter(sample_id %in% reference_data$sample_id) %>%
     left_join(reference_data %>% select(location_id, sample_id), by="sample_id") %>%
     select(-sample_id) %>%
-    relocate(location_id) %>%
-    distinct(location_id, .keep_all=TRUE)
+    relocate(location_id)
 }
 
 filter_WUR_SRs <- function(WUR_SRs, reference_data) {
@@ -37,6 +36,5 @@ filter_WUR_SRs <- function(WUR_SRs, reference_data) {
     filter(location_id %in% reference_data$location_id) %>%
     left_join(reference_data %>% select(location_id, centroid_x, centroid_y), by="location_id") %>%
     select(-sample_x, -sample_y) %>%
-    relocate(c("centroid_x", "centroid_y"), .after="location_id") %>%
-    distinct(location_id, .keep_all=TRUE)
+    relocate(c("centroid_x", "centroid_y"), .after="location_id")
 }

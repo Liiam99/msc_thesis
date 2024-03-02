@@ -6,20 +6,17 @@ source("./R/utils/calc-index-metrics.r")
 source("./R/utils/harm_utils.r")
 source("./R/utils/utils.r")
 
-calc_base_features <- function(reference_data, start, end) {
-  NIRv_metrics <- calc_index_metrics("NIRv", start, end)
-  NIRv_harmonics <- calc_NIRv_harmonics(unique(reference_data$location_id))
+calc_base_features <- function(reference_data, indices, start, end) {
+  NIRv_metrics <- calc_index_metrics(indices[["NIRv"]], "NIRv", start, end)
+  NIRv_harmonics <- calc_NIRv_harmonics(indices[["NIRv"]], reference_data$location_id)
 
   reference_data <- reference_data %>%
-    distinct(location_id, is_change)
+    select(location_id, is_change)
   base_features <- plyr::join_all(list(reference_data, NIRv_metrics, NIRv_harmonics), by="location_id")
 }
 
 # Credit to: https://github.com/GreatEmerald/postprocessing-bfast/blob/main/src/015_preprocess_dense/10_CalcTemporalHarmonics.r
-calc_NIRv_harmonics <- function(location_ids) {
-  NIRv <- st_read("./data/global/processed/temporal_indices/NIRv.gpkg", quiet=T)
-  NIRv <- NIRv[NIRv$location_id %in% location_ids, ]
-  
+calc_NIRv_harmonics <- function(NIRv, location_ids) {
   # Center harmonics around first year (July 2016 - June 2017)
   NIRvz_first_year <- window(SFToZoo(NIRv), start=as.Date("2015-07-01"), end=as.Date("2018-6-30"))
   

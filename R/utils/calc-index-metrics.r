@@ -4,8 +4,7 @@ library(zoo)
 
 source("./R/utils/utils.r")
 
-calc_index_metrics <- function(index_name, start, end, InFile="./data/global/processed/temporal_indices/") {
-  index <- st_read(paste0(InFile, index_name, ".gpkg"), quiet=T)
+calc_index_metrics <- function(index, index_name, start, end) {
   index <- index %>%
     arrange(location_id)
   index_zoo <- SFToZoo(index)

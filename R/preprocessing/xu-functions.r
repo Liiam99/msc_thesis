@@ -37,12 +37,11 @@ filter_changes <- function(reference_data) {
         labels = c("No Change", "Change")  # Specify labels for the levels
       )
     ) %>%
+    na.omit %>%
     select(location_id, is_change) %>%
     distinct()
-
-  # Removes the locations that do not conform to the definitions.
+  
   reference_data <- merge(reference_data, location_changes)
-  reference_data <- reference_data[complete.cases(reference_data$is_change), ]
 }
 
 remove_sites_with_breaks <- function(reference_data, start, end) {
@@ -98,7 +97,36 @@ remove_sites_with_breaks <- function(reference_data, start, end) {
   }
   
   # Removes locations that contain a break outside the targeted date range.
-  locations_with_breaks <- pblapply(unique(reference_data$location_id), BFL, cl=10)
+  locations_with_breaks <- pblapply(reference_data$location_id, BFL, cl=10)
   locations_with_breaks <- locations_with_breaks[lengths(locations_with_breaks) != 0]
   reference_data <- reference_data[!reference_data$location_id %in% locations_with_breaks, ]
+}
+
+assign_lcc_categories <- function(reference_data) {
+  lcc_map <- c(crops="herbaceous_vegetation",
+               grassland="herbaceous_vegetation",
+               tree="forest",
+               wetland_herbaceous="wetland",
+               water="water",
+               bare="bare",
+               urban_built_up="urban",
+               shrub="shrub")
+  
+  reference_data <- reference_data %>%
+    group_by(location_id) %>%
+    mutate(
+      from = ifelse(
+        reference_year == 2015,
+        lcc_map[levels(dominant_lc)[dominant_lc]],
+        NA
+      )
+    ) %>%
+    mutate(
+      to = ifelse(
+        reference_year == 2018,
+        lcc_map[levels(dominant_lc)[dominant_lc]],
+        NA
+      )
+    ) %>%
+    ungroup()
 }

@@ -46,14 +46,13 @@ ZooToSF = function(zobj, sfobj)
   return(sfobj)
 }
 
-ZooToDf <- function(zoo_obj, VIname, df_name) {
+ZooToDf <- function(zoo_obj, index_name, df_name) {
   df <- data.frame(
     location_id=names(zoo_obj), 
     zoo_obj, 
     row.names=NULL
   )
-  
-  colnames(df)[2] <- paste(VIname, df_name, sep="_")
+  colnames(df)[2] <- paste(index_name, df_name, sep="_")
   
   return(df)
 }
