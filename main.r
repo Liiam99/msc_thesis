@@ -12,9 +12,10 @@ source("./R/processing/explore-errors.r")
 source("./R/processing/train-random-forest.r")
 
 source("./R/utils/custom-unify.r")
+source("./R/utils/utils.r")
 library(treeshap)
 
-# Select targeted date range
+# Select targeted date range (2 years range)
 # Dates must be between 2015-01-01 and 2018-12-31
 START = as.Date("2016-07-01")
 END = as.Date("2018-6-30")
@@ -41,12 +42,16 @@ reference_data_condensed <- reference_data %>%
 SRs <- load_SRs(reference_data_condensed)
 indices <- calc_temporal_indices(SRs)
 
+# Creates time series objects with the specified range.
+indices_ts <- lapply(indices, SFToZoo)
+indices_ts <- lapply(indices_ts, window, start=START, end=END)
+
 # Calculating the features for the base model.
-base_features <- calc_base_features(reference_data_condensed, indices, start=START, end=END)
+base_features <- calc_base_features(reference_data_condensed, indices_ts$NIRv)
 base_features <- na.omit(base_features)
 
 # Calculating the extra features for the full model.
-extra_features <- calc_extra_features(reference_data_condensed, indices, start=START, end=END)
+extra_features <- calc_extra_features(reference_data_condensed, indices_ts)
 full_features <- merge(base_features, extra_features)
 full_features <- na.omit(full_features)
 
@@ -78,7 +83,7 @@ plot_feature_importance(treeshap_object)
 
 # commission errors = 100 - user accuracy
 # errors where the class was predicted as change but was not in reality.
-com_errors <- assess_errors(unified, errors, "commission", indices, start=START, end=END)
+com_errors <- assess_errors(unified, errors, "commission", indices_ts)
 
 com_errors_sf <- st_as_sf(x=com_errors,
                           coords=c("centroid_x", "centroid_y"),
@@ -87,9 +92,50 @@ st_write(com_errors_sf, "com_errors.kml")
 
 # omission errors = 100 - producer's accuracy
 # errors where the class was not predicted as change but was a change in reality.
-om_errors <- assess_errors(unified, errors, "omission", indices, start=START, end=END)
+om_errors <- assess_errors(unified, errors, "omission", indices_ts)
 
 om_errors_sf <- st_as_sf(x=om_errors,
                           coords=c("centroid_x", "centroid_y"),
                           crs="WGS84")
 st_write(om_errors_sf, "om_errors.kml")
+
+
+
+
+
+# 
+# nandika_errors <- errors[errors$location_id %in% unique(lol$location_id), ]
+# nandika_errors <- nandika_errors %>%
+#   mutate(type_of_error=ifelse(location_id %in% com_errors$location_id, "commission", "omission")) %>%
+#   select(location_id, sample_id, centroid_x, centroid_y, type_of_error)
+# 
+# errors_sf <- st_as_sf(x=nandika_errors,
+#                       coords=c("centroid_x", "centroid_y"),
+#                       crs="WGS84")
+# st_write(errors_sf, "errors.gpkg")
+
+#### VISUALISATION ####
+library(ggplot2)
+theme_set(theme_bw())
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+ggplot() +
+  geom_sf(data = world) +
+  geom_sf(data = om_errors_sf, color = "red") +
+  geom_sf(data = com_errors_sf, color = "blue") +
+  labs(title = "Commission and omission errors of full Random Forest model")
+
+com_errors_sf <- st_as_sf(x=com_errors_reference,
+                          coords=c("centroid_x", "centroid_y"),
+                          crs="WGS84")
+plot(st_geometry(com_errors_sf))
+
+om_errors_sf <- st_as_sf(x=om_errors_reference,
+                         coords=c("centroid_x", "centroid_y"),
+                         crs="WGS84")
+plot(st_geometry(om_errors_sf), add=T)
+

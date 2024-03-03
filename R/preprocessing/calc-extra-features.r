@@ -1,15 +1,13 @@
 library(dplyr)
 library(sf)
-library(zoo)
 
 source("./R/utils/calc-index-metrics.r")
-source("./R/utils/utils.r")
 
-calc_extra_features <- function(reference_data, indices, start, end) {
-  extra_indices_names <- c("DVI", "EVI", "MNDBI", "MNDWI", "NBR", "NDMI", "NDVI", 
-                           "TCW", "TCWVI")
-  extra_indices <-  indices[names(indices) %in% extra_indices_names]
-  extra_indices_metrics <- mapply(calc_index_metrics, extra_indices, extra_indices_names, MoreArgs=list(start=start, end=end), SIMPLIFY=F)
+calc_extra_features <- function(reference_data, time_series) {
+  extra_time_series_names<- c("DVI", "EVI", "MNDBI", "MNDWI", "NBR", "NDMI", 
+                              "NDVI", "TCW", "TCWVI")
+  extra_time_series <-  time_series[names(time_series) %in% extra_time_series_names]
+  extra_indices_metrics <- mapply(calc_index_metrics, extra_time_series, extra_time_series_names, SIMPLIFY=F)
   
   spatial_stats <- calc_spatial_stats(reference_data)
 

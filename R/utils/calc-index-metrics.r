@@ -4,14 +4,12 @@ library(zoo)
 
 source("./R/utils/utils.r")
 
-calc_index_metrics <- function(index, index_name, start, end) {
-  index <- index %>%
-    arrange(location_id)
-  index_zoo <- SFToZoo(index)
-  
-  year_cutoff_date <- ((end - start)/2) + start
-  index_zoo_year_1 <- window(index_zoo, start=start, end=year_cutoff_date)
-  index_zoo_year_2 <- window(index_zoo, start=year_cutoff_date, end=end)
+calc_index_metrics <- function(index_ts, index_name) {
+  start_date <- start(index_ts)
+  end_date <- end(index_ts)
+  year_cutoff_date <- start_date + (end_date - start_date) / 2
+  index_zoo_year_1 <- window(index_ts, start=start_date, end=year_cutoff_date)
+  index_zoo_year_2 <- window(index_ts, start=year_cutoff_date + 1)
   
   # Relative yearly change in index minimum (10th percentile).
   min_year_1 <- apply(index_zoo_year_1, 2, quantile, probs=0.1, na.rm=T, names=F)
@@ -34,11 +32,11 @@ calc_index_metrics <- function(index, index_name, start, end) {
   rel_yearly_IQR_change <- (year_2_IQR - year_1_IQR)/year_1_IQR
   
   # Descriptive metrics of the time series as a whole.
-  index_zoo <- window(index_zoo, start=start, end=end)
-  index_min <- apply(index_zoo, 2, quantile, probs=0.1, na.rm=T, names=F)
-  index_max <- apply(index_zoo, 2, quantile, probs=0.9, na.rm=T, names=F)
-  index_mean <- apply(index_zoo, 2, safe_mean)
-  index_IQR <- apply(index_zoo, 2, IQR, na.rm=T)
+  #index_zoo <- window(index, start=start, end=end)
+  index_min <- apply(index_ts, 2, quantile, probs=0.1, na.rm=T, names=F)
+  index_max <- apply(index_ts, 2, quantile, probs=0.9, na.rm=T, names=F)
+  index_mean <- apply(index_ts, 2, safe_mean)
+  index_IQR <- apply(index_ts, 2, IQR, na.rm=T)
   
   index_metrics <- list(rel_yearly_min_change=rel_yearly_min_change, 
                         rel_yearly_max_change=rel_yearly_max_change, 

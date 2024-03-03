@@ -4,7 +4,7 @@ library(treeshap)
 
 source("./R/utils/utils.r")
 
-assess_errors <- function(unified, errors, type_of_error, indices, start, end) {
+assess_errors <- function(unified, errors, type_of_error, time_series) {
   # Only two options: commission and omission.
   if (type_of_error == "commission") {
     errors <- errors[errors$pred == "Change" & errors$obs == "No Change", ]
@@ -48,11 +48,10 @@ assess_errors <- function(unified, errors, type_of_error, indices, start, end) {
       plot.new()
     } else {
       # Retrieves the time series of the index used to calculate the feature.
-      index <- indices[[index_name]]
-      index_error <- index[index$location_id == error$location_id, ]
+      index_ts <- time_series[[index_name]]
+      index_ts_error <- index_ts[, names(index_ts) == error$location_id]
   
-      index_error_zoo <- window(SFToZoo(index_error), start=start, end=end)
-      plot(index_error_zoo, xlab="Time", ylab=index_name, main=feature_name, sub=error$location_id)
+      plot(index_ts_error, xlab="Time", ylab=index_name, main=feature_name, sub=error$location_id)
     }
     
     # User can either continue to assess next error or quit.
