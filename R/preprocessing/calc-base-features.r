@@ -6,9 +6,9 @@ source("./R/utils/calc-index-metrics.r")
 source("./R/utils/harm_utils.r")
 source("./R/utils/utils.r")
 
-calc_base_features <- function(reference_data, NIRv_ts) {
+calc_base_features <- function(reference_data, NIRv_ts, brazil=F) {
   NIRv_metrics <- calc_index_metrics(NIRv_ts, "NIRv")
-  NIRv_harmonics <- calc_NIRv_harmonics(reference_data$location_id)
+  NIRv_harmonics <- calc_NIRv_harmonics(reference_data$location_id, brazil)
 
   reference_data <- reference_data %>%
     select(location_id, is_change)
@@ -16,17 +16,24 @@ calc_base_features <- function(reference_data, NIRv_ts) {
 }
 
 # Credit to: https://github.com/GreatEmerald/postprocessing-bfast/blob/main/src/015_preprocess_dense/10_CalcTemporalHarmonics.r
-calc_NIRv_harmonics <- function(location_ids) {
+calc_NIRv_harmonics <- function(location_ids, brazil) {
+  if (brazil == T) {
+    folder <- "brazil"
+  } else {
+    folder <- "global"
+  }
+  
   # Needs more years than targeted date range so got to load it in again
-  NIRv <- st_read("./data/global/processed/temporal_indices/NIRv.gpkg", quiet=T)
+  NIRv_file_path <- paste0("./data/", folder, "/processed/temporal_indices/NIRv.gpkg")
+  NIRv <- st_read(NIRv_file_path, quiet=T)
   NIRv <- NIRv[NIRv$location_id %in% location_ids, ]
   NIRv_ts <- SFToZoo(NIRv)
   
   # Center harmonics around first year (July 2016 - June 2017)
-  NIRvz_first_year <- window(NIRv_ts, start=as.Date("2015-07-01"), end=as.Date("2018-6-30"))
+  NIRvz_first_year <- window(NIRv_ts, start=as.Date("2015-07-01"), end=as.Date("2018-07-01"))
   
   # Center harmonics around second year (July 2017 - June 2018)
-  NIRvz_second_year <- window(NIRv_ts, start=as.Date("2016-07-01"), end=as.Date("2019-6-30"))
+  NIRvz_second_year <- window(NIRv_ts, start=as.Date("2016-07-01"), end=as.Date("2019-07-01"))
   
   out_layers = c("min", "max", "intercept", "co", "si", "co2", "si2", "trend",
                  "phase1", "amplitude1", "phase2", "amplitude2")

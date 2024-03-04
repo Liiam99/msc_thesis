@@ -32,7 +32,6 @@ calc_index_metrics <- function(index_ts, index_name) {
   rel_yearly_IQR_change <- (year_2_IQR - year_1_IQR)/year_1_IQR
   
   # Descriptive metrics of the time series as a whole.
-  #index_zoo <- window(index, start=start, end=end)
   index_min <- apply(index_ts, 2, quantile, probs=0.1, na.rm=T, names=F)
   index_max <- apply(index_ts, 2, quantile, probs=0.9, na.rm=T, names=F)
   index_mean <- apply(index_ts, 2, safe_mean)

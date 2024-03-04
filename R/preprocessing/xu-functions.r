@@ -44,9 +44,9 @@ filter_changes <- function(reference_data) {
   reference_data <- merge(reference_data, location_changes)
 }
 
-remove_sites_with_breaks <- function(reference_data, start, end) {
-  SRs <- load_SRs(reference_data)
-  
+remove_sites_with_breaks <- function(reference_data, start, end, brazil=F) {
+  SRs <- load_SRs(reference_data, brazil)
+
   # Saves a template to include location id and proper date notations.
   Template = SRs[[1]]
   names(Template)[datecols(Template)] = strtrim(names(Template)[datecols(Template)], 11)

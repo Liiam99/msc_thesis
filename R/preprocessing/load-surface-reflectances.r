@@ -1,6 +1,15 @@
 library(dplyr)
 
-load_SRs <- function(reference_data) {
+load_SRs <- function(reference_data, brazil=F) {
+  if (brazil == T) {
+    brazil_gpkg = "./data/brazil/raw/BrazilChange20152018_Landsat8_TS.gpkg"
+    SRNames = st_layers(brazil_gpkg)$name
+    SRs = lapply(SRNames, function(name) st_read(brazil_gpkg, layer=name, quiet=T))
+    names(SRs) = SRNames
+    
+    return(SRs)
+  }
+  
   # Reads all surface reflectances into a single list "IIASA_SRs".
   IIASA_gpkg = "./data/global/raw/IIASAChange20152018_Landsat8_TS.gpkg"
   SRNames = st_layers(IIASA_gpkg)$name

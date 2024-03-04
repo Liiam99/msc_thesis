@@ -11,7 +11,7 @@ library(zoo)
 
 source("./R/utils/utils.r")
 
-calc_temporal_indices = function(SRs) {
+calc_temporal_indices = function(SRs, brazil=F) {
   # Saves a template for writing, with consistent column names.
   OutTemplate = SRs[[1]]
   names(OutTemplate)[datecols(OutTemplate)] = strtrim(names(OutTemplate)[datecols(OutTemplate)], 11)
@@ -19,7 +19,13 @@ calc_temporal_indices = function(SRs) {
   # Converts into a zoo matrix.
   SRZ = lapply(lapply(SRs, SFToMatrix), MatrixToZoo)
   
-  Feature_GPKG = "./data/global/processed/temporal_indices/"
+  if (brazil == T) {
+    folder = "brazil"
+  } else {
+    folder = "global"
+  }
+  
+  Feature_GPKG = paste0("./data/", folder, "/processed/temporal_indices/")
   
   # Calculates all indices used in Xu et al. (2022).
   NDVI  = function(BLUE=NULL, GREEN=NULL, RED     , NIR,  SWIR1=NULL, SWIR2=NULL)

@@ -4,12 +4,12 @@
 # Script to convert the GEE extracted points output CSVs into a compact GeoPackage
 library(sf)
 
-InputDir = file.path("..", "..", "data", "regional", "brazil_bands_data_2015-2018")
-DataFile = file.path("..", "..", "data", "regional", "brazil_reference_data.csv")
-OutFile = file.path("..", "..", "data", "regional", "BrazilChange20152018_Landsat8_TS.gpkg")
-Bands = c("SR_B2", "SR_B3", "SR_B4", "SR_B5", "SR_B6") # For Landsat 8
+InputDir = file.path("..", "..", "data", "brazil", "raw", "brazil_bands_data_2015-2018")
+DataFile = file.path("..", "..", "data", "brazil", "raw", "brazil_reference_data.csv")
+OutFile = file.path("..", "..", "data", "brazil", "raw", "BrazilChange20152018_Landsat8_TS.gpkg")
+Bands = c("SR_B2", "SR_B3", "SR_B4", "SR_B5", "SR_B6", "SR_B7") # For Landsat 8
 #Bands = c("water", "trees", "grass", "flooded_vegetation", "crops", "shrub_and_scrub", "built", "bare", "snow_and_ice") # For Dynamic World
-id = "TARGET_FID" # "sample_id" for validation data
+id = "TARGETID" # "sample_id" for validation data
 xycols = c("LON", "LAT") # x/y column names in the DataFile, "subpix_mean_x", "subpix_mean_y" for validation
 integers = TRUE # Whether the data type is integers (Landsat) or floats (Dynamic World)
 
@@ -46,6 +46,7 @@ ProcessBand = function(Filenames)
     # Sort columns by date
     SingleBand = SingleBand[,order(names(SingleBand))]
     SpatialBand = merge(UniqueData, SingleBand, by=id)
+    names(SpatialBand)[names(SpatialBand) == id] = "location_id"
 
     BandMatch = which(sapply(Bands, function(Band) length(grep(Band, Filenames[1])) > 0))
     BandName = Bands[BandMatch]
