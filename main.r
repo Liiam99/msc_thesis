@@ -61,45 +61,44 @@ full_features <- na.omit(full_features)
 #### MODELS ####
 # Base random forest model.
 base_rf <- train_rf(base_features)
-conf_matrix <- confusionMatrix(base_rf)$table
-base_rf_performance_metrics <- calc_performance_metrics(conf_matrix)
+base_rf_conf_matrix <- confusionMatrix(base_rf)$table
+base_rf_performance_metrics <- calc_performance_metrics(base_rf_conf_matrix)
 print(base_rf_performance_metrics)
-var_imp <- varImp(base_rf, type=1)
-print(plot(var_imp, top=dim(var_imp$importance[1]), main="Relative Permutation Feature Importance"))
+base_rf_var_imp <- varImp(base_rf, type=1)
+print(plot(base_rf_var_imp, top=dim(base_rf_var_imp$importance[1]), main="Relative Permutation Feature Importance"))
 
 # Full random forest model.
 full_rf <- train_rf(full_features)
-conf_matrix <- confusionMatrix(full_rf)$table
-full_rf_performance_metrics <- calc_performance_metrics(conf_matrix)
+full_rf_conf_matrix <- confusionMatrix(full_rf)$table
+full_rf_performance_metrics <- calc_performance_metrics(full_rf_conf_matrix)
 print(full_rf_performance_metrics)
-var_imp <- varImp(full_rf, type=1)
-print(plot(var_imp, top=dim(var_imp$importance[1]), main="Relative Permutation Feature Importance"))
+full_rf_var_imp <- varImp(full_rf, type=1)
+print(plot(full_rf_var_imp, top=dim(full_rf_var_imp$importance[1]), main="Relative Permutation Feature Importance"))
 
 
 
 #### ERROR EXPLORATION ####
-errors <- full_rf$pred[full_rf$pred$pred != full_rf$pred$obs, ]
-errors$location_id <- full_rf$trainingData$location_id[errors$rowIndex]
-errors <- errors[, !colnames(errors) %in% c("mtry", "Resample")]
-errors <- merge(reference_data_condensed, errors, by="location_id")
+global_errors <- full_rf$pred[full_rf$pred$pred != full_rf$pred$obs, ]
+global_errors$location_id <- full_rf$trainingData$location_id[global_errors$rowIndex]
+global_errors <- global_errors[, !colnames(global_errors) %in% c("mtry", "Resample")]
+global_errors <- merge(reference_data_condensed, global_errors, by="location_id")
 
-unified <- custom.unify(full_rf$finalModel, full_rf$trainingData)
-treeshap_object <- treeshap(unified, full_features[errors$rowIndex, ])
-
-plot_feature_importance(treeshap_object)
+unified_global <- custom.unify(full_rf$finalModel, full_rf$trainingData)
+treeshap_global <- treeshap(unified_global, full_features[global_errors$rowIndex, ])
+plot_feature_importance(treeshap_global)
 
 # commission errors = 100 - user accuracy
 # errors where the class was predicted as change but was not in reality.
-com_errors <- assess_errors(unified, errors, "commission", global_indices_ts)
+global_com_errors <- assess_errors(unified_global, global_errors, "commission", global_indices_ts)
 
 # omission errors = 100 - producer's accuracy
 # errors where the class was not predicted as change but was a change in reality.
-om_errors <- assess_errors(unified, errors, "omission", global_indices_ts)
+global_om_errors <- assess_errors(unified_global, global_errors, "omission", global_indices_ts)
 
 
 
 #### VISUALISATION ####
-visualise_errors(com_errors, om_errors)
+visualise_errors(global_com_errors, global_om_errors)
 
 
 
@@ -110,7 +109,10 @@ visualise_errors(com_errors, om_errors)
 brazil <- T
 brazil_reference_data <- read.csv("./data/brazil/raw/brazil_reference_data.csv")
 names(brazil_reference_data)[names(brazil_reference_data) == "TARGETID"] <- "location_id"
-brazil_reference_data$is_change <- factor(brazil_reference_data$is_change, levels = c(0, 1), labels = c("No Change", "Change"))
+brazil_reference_data$is_change <- factor(brazil_reference_data$is_change, 
+                                          levels = c(0, 1), 
+                                          labels = c("No Change", "Change"))
+
 brazil_reference_data <- remove_sites_with_breaks(brazil_reference_data, start=START, end=END, brazil)
 
 brazil_reference_data_condensed <- condense_brazil_data(brazil_reference_data)
@@ -124,17 +126,19 @@ brazil_indices_ts <- lapply(brazil_indices, SFToZoo)
 brazil_indices_ts <- lapply(brazil_indices_ts, window, start=START, end=END)
 
 brazil_base_features <- calc_base_features(brazil_reference_data_condensed, brazil_indices_ts$NIRv, brazil)
+brazil_base_features <- na.omit(brazil_base_features)
+
 brazil_extra_features <- calc_extra_features(brazil_reference_data_condensed, brazil_indices_ts)
 brazil_full_features <- merge(brazil_base_features, brazil_extra_features)
 brazil_full_features <- na.omit(brazil_full_features)
 
 #### MODELS ####
 brazil_preds <- predict(full_rf, newdata=brazil_full_features)
-conf_matrix <- confusionMatrix(brazil_preds, brazil_full_features$is_change)$table
-print(calc_performance_metrics(conf_matrix))
+brazil_conf_matrix <- confusionMatrix(brazil_preds, brazil_full_features$is_change)$table
+print(calc_performance_metrics(brazil_conf_matrix))
 
 #### ERROR EXPLORATION ####
 brazil_errors <- brazil_full_features[brazil_preds != brazil_full_features$is_change, ]
-errors$location_id <- full_rf$trainingData$location_id[errors$rowIndex]
-errors <- errors[, !colnames(errors) %in% c("mtry", "Resample")]
-errors <- merge(reference_data_condensed, errors, by="location_id")
+unified_brazil <- custom.unify(full_rf$finalModel, brazil_errors)
+treeshap_brazil <- treeshap(unified_brazil, brazil_errors)
+plot_feature_importance(treeshap_brazil)

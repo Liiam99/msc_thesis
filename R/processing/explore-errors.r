@@ -15,7 +15,7 @@ assess_errors <- function(unified, errors, type_of_error, time_series) {
   }
   
   # Samples random (c)om errors and collects all relevant data for assessment.
-  set.seed(1)
+  set.seed(123)
   random_errors <- sample_n(errors, 20)
   random_errors_features <- unified$data[random_errors$rowIndex, ]
   random_errors_shaps <- treeshap(unified, random_errors_features)$shaps
