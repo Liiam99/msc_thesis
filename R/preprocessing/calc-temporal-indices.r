@@ -56,7 +56,7 @@ calc_temporal_indices = function(SRs, brazil=F) {
       {return(0.1511*BLUE + 0.1973*GREEN + 0.3283*RED + 0.3407*NIR - 0.7117*SWIR1 - 0.4559*SWIR2)}
 
   indices_formulae = list(NDVI=NDVI, NIRv=NIRv, NDMI=NDMI, EVI=EVI, MNDWI=MNDWI, 
-                          NBR=NBR, DVI=DVI, MNDBI=MNDBI)
+                          NBR=NBR, DVI=DVI, MNDBI=MNDBI, TCW=TCW)
   
   indices <- list()
   

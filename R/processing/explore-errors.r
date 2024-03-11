@@ -7,9 +7,9 @@ source("./R/utils/utils.r")
 assess_errors <- function(unified, errors, type_of_error, time_series) {
   # Only two options: commission and omission.
   if (type_of_error == "commission") {
-    errors <- errors[errors$pred == "Change" & errors$obs == "No Change", ]
+    errors <- errors[errors$pred == "Change" & errors$obs == "NoChange", ]
   } else if (type_of_error == "omission") {
-    errors <- errors[errors$pred == "No Change" & errors$obs == "Change", ]
+    errors <- errors[errors$pred == "NoChange" & errors$obs == "Change", ]
   } else {
     stop("Invalid type of error. Error options are [commission] or [omission]")
   }
@@ -18,7 +18,8 @@ assess_errors <- function(unified, errors, type_of_error, time_series) {
   set.seed(123)
   random_errors <- sample_n(errors, 20)
   random_errors_features <- unified$data[random_errors$rowIndex, ]
-  random_errors_shaps <- treeshap(unified, random_errors_features)$shaps
+  random_errors_treeshap <- treeshap(unified, random_errors_features)
+  random_errors_shaps <- random_errors_treeshap$shaps
   
   # These harmonics are derived from NIRv time series.
   NIRv_harmonics <- c("amplitude1", "co", "si", "amplitude2", "si2")
@@ -50,8 +51,8 @@ assess_errors <- function(unified, errors, type_of_error, time_series) {
       # Retrieves the time series of the index used to calculate the feature.
       index_ts <- time_series[[index_name]]
       index_ts_error <- index_ts[, names(index_ts) == error$location_id]
-  
       plot(index_ts_error, xlab="Time", ylab=index_name, main=feature_name, sub=error$location_id)
+      print(plot_contribution(random_errors_treeshap, obs=error_nr))
     }
     
     # User can either continue to assess next error or quit.

@@ -34,7 +34,7 @@ filter_changes <- function(reference_data) {
           )
         ),
         levels = c(0, 1),  # Specify the levels for the factor variable
-        labels = c("No Change", "Change")  # Specify labels for the levels
+        labels = c("NoChange", "Change")  # Specify labels for the levels
       )
     ) %>%
     na.omit %>%
