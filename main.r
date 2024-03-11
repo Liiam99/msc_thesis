@@ -11,14 +11,15 @@ source("./R/preprocessing/load-surface-reflectances.r")
 source("./R/preprocessing/xu-functions.r")
 
 # Processing imports
+source("./R/processing/assess-errors.r")
+source("./R/processing/calc-error-shaps.r")
 source("./R/processing/calc-performance-metrics.r")
-source("./R/processing/explore-errors.r")
+source("./R/processing/derive-errors.r")
 source("./R/processing/train-random-forest.r")
 
 # Visualisation imports
 source("./R/visualisation/visualise-errors.r")
 
-source("./R/utils/custom-unify.r")
 source("./R/utils/utils.r")
 
 # Select targeted date range (2 years range)
@@ -65,7 +66,6 @@ base_rf_metrics <- sapply(base_rf_models, calc_performance_metrics)
 print(rowMeans(base_rf_metrics))
 
 # Full random forest model.
-source("./R/processing/train-random-forest.r")
 full_rf_models <- train_rf(full_features, k=10)
 full_rf_metrics <- sapply(full_rf_models, calc_performance_metrics)
 print(rowMeans(full_rf_metrics))
@@ -73,20 +73,17 @@ print(rowMeans(full_rf_metrics))
 
 
 #### ERROR EXPLORATION ####
-global_errors <- full_rf$pred[full_rf$pred$pred != full_rf$pred$obs, ]
-# GAAT DIT WEL GOED????
-global_errors$location_id <- full_rf$trainingData$location_id[global_errors$rowIndex]
-global_errors <- global_errors[, !colnames(global_errors) %in% c("mtry", "Resample")]
-global_errors <- merge(reference_data_condensed, global_errors, by="location_id")
-
-final_model_data <- full_features[full_rf$control$indexFinal, ]
-unified_global <- custom.unify(full_rf$finalModel, final_model_data)
-treeshap_global <- treeshap(unified_global, full_features[global_errors$rowIndex, ])
-plot_feature_importance(treeshap_global)
+global_errors <- lapply(full_rf_models, derive_errors)
+global_errors <- do.call(rbind, global_errors)
+global_errors_shaps <- lapply(full_rf_models, calc_error_shaps, full_features)
 
 # commission errors = 100 - user accuracy
 # errors where the class was predicted as change but was not in reality.
-global_com_errors <- assess_errors(unified_global, global_errors, "commission", global_indices_ts)
+global_com_errors <- assess_errors(
+  global_errors[global_errors$error_type == "commission", ], 
+  global_errors_shaps, 
+  full_features,
+  global_indices_ts)
 global_com_errors_sf <- st_as_sf(x=global_com_errors[global_com_errors$is_drawn == T, ],
                                 coords=c("centroid_x", "centroid_y"),
                                 crs="WGS84")
@@ -95,7 +92,11 @@ st_write(global_com_errors_sf, "results/global_com_errors.kml")
 
 # omission errors = 100 - producer's accuracy
 # errors where the class was not predicted as change but was a change in reality.
-global_om_errors <- assess_errors(unified_global, global_errors, "omission", global_indices_ts)
+global_om_errors <- assess_errors(
+  global_errors[global_errors$error_type == "omission", ], 
+  global_errors_shaps, 
+  full_features,
+  global_indices_ts)
 global_om_errors_sf <- st_as_sf(x=global_om_errors[global_om_errors$is_drawn == T, ],
                          coords=c("centroid_x", "centroid_y"),
                          crs="WGS84")

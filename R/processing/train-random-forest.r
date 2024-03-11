@@ -1,21 +1,20 @@
 library(caret)
 library(randomForest)
-library(treeshap)
 
-train_rf <- function(data, k, cutoff=0.5) {
+train_rf <- function(features, k, cutoff=0.5) {
   correlated_features <- findCorrelation(
-    cor(data[, !colnames(data) %in% c("location_id", "is_change")]), 
+    cor(features[, !colnames(features) %in% c("location_id", "is_change")]), 
     cutoff=cutoff,
     names=T
   )
   
-  filtered_features <- data[, !colnames(data) %in% correlated_features]
+  filtered_features <- features[, !colnames(features) %in% correlated_features]
   set.seed(123)
   folds <- createFolds(filtered_features$is_change, k)
   
   results <- vector(mode='list', length=k)
   
-  for (i in 1:k) {
+  for (i in 1:1) {
     print(paste("Fold:", i))
     
     # Creates oversampled training data.
@@ -29,16 +28,17 @@ train_rf <- function(data, k, cutoff=0.5) {
 
     rf_model <- randomForest(is_change ~ . - location_id, data=train_data, ntree=128) 
     
-    prob_preds <- predict(rf_model, newdata=val_data, type="prob")
-    preds <- predict(rf_model, newdata=val_data)
+    prob_pred <- predict(rf_model, newdata=val_data, type="prob")
+    pred <- predict(rf_model, newdata=val_data)
   
     results[[i]] <- list(
       model=rf_model,
-      preds=preds,
+      pred=pred,
       obs=val_data$is_change,
-      prob_preds=prob_preds,
+      prob_pred=prob_pred,
       train_index=train_index,
-      val_index=val_index
+      val_index=val_index,
+      fold=i
     )
   }
   

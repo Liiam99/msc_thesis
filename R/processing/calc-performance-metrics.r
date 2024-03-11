@@ -1,7 +1,7 @@
 library(caret)
 
 calc_performance_metrics <- function(result) {
-  conf_matrix <- confusionMatrix(result$preds, result$obs)$table
+  conf_matrix <- confusionMatrix(result$pred, result$obs)$table
   
   TN <- conf_matrix[1, 1]
   FN <- conf_matrix[1, 2]
