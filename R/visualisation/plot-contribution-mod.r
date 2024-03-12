@@ -23,7 +23,6 @@ plot_contribution_mod <- function(shap,
   }
   
   x <- x[, colnames(shap)]
-
   df <- data.frame(variable = colnames(shap), contribution = as.numeric(shap))
   
   # setting variable names to showing their value

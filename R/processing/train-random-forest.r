@@ -14,17 +14,17 @@ train_rf <- function(features, k, cutoff=0.5) {
   
   results <- vector(mode='list', length=k)
   
-  for (i in 1:1) {
+  for (i in 1:k) {
     print(paste("Fold:", i))
     
     # Creates oversampled training data.
-    train_index <- unlist(folds[-i])
-    train_data <- filtered_features[train_index, ]
+    train_idx <- unlist(folds[-i])
+    train_data <- filtered_features[train_idx, ]
     train_data <- upSample(train_data, train_data$is_change, yname="is_change")
     
     # All other data is validation data.
-    val_index <- unlist(folds[i])
-    val_data <- filtered_features[val_index, ]
+    val_idx <- unlist(folds[i])
+    val_data <- filtered_features[val_idx, ]
 
     rf_model <- randomForest(is_change ~ . - location_id, data=train_data, ntree=128) 
     
@@ -36,8 +36,9 @@ train_rf <- function(features, k, cutoff=0.5) {
       pred=pred,
       obs=val_data$is_change,
       prob_pred=prob_pred,
-      train_index=train_index,
-      val_index=val_index,
+      train_idx=train_idx,
+      val_idx=val_idx,
+      val_location_id=val_data$location_id,
       fold=i
     )
   }

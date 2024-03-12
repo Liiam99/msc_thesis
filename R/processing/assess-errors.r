@@ -17,16 +17,16 @@ assess_errors <- function(errors, errors_shaps, features, time_series) {
   for (error_nr in 1:nrow(random_errors)) {
     print("--------------------------------")
     error <- random_errors[error_nr, ]
-    error_features <- features[error$feature_idx, ]
-    error_shaps <- errors_shaps[[error$fold]][error$shap_idx ,]
+    error_features <- features[error$val_idx, ]
+    error_shaps <- errors_shaps[error$shap_idx ,]
     
     # Checks the feature with the highest Shapley value and what index it used.
     highest_shap_value_idx <- which.max(abs(error_shaps))
     feature_name <- colnames(error_shaps)[highest_shap_value_idx]
     index_name <- sub("_.*", "", feature_name)
     
-    print(paste("Location ID:", error_features$location_id))
-    #print(paste("From", error$from, "to", error$to))
+    print(paste("Location ID:", error$location_id))
+    print(paste("From", error$from, "to", error$to))
     print(paste("Most influential feature:", feature_name))
     print(paste("Shapley value:", error_shaps[highest_shap_value_idx]))
     
@@ -40,16 +40,17 @@ assess_errors <- function(errors, errors_shaps, features, time_series) {
     } else {
       # Retrieves the time series of the index used to calculate the feature.
       index_ts <- time_series[[index_name]]
-      index_ts_error <- index_ts[, names(index_ts) == error_features$location_id]
-      plot(index_ts_error, xlab="Time", ylab=index_name, main=feature_name, sub=error_features$location_id)
+      index_ts_error <- index_ts[, names(index_ts) == error$location_id]
+      plot(index_ts_error, xlab="Time", ylab=index_name, main=feature_name, sub=error$location_id)
     }
     
+    # Displays a plot that breaks down the contribution of each feature to
+    # the predicted value.
     print(plot_contribution_mod(
       error_shaps, 
       error_features, 
-      error$Change, 
-      min_max=c(0, 1),
-      subtitle=error_features$location_id))
+      error$Change,
+      subtitle=error$location_id))
     
     # User can either continue to assess next error or quit.
     prompt_text <- paste("Next error? (y/n) ")

@@ -8,11 +8,8 @@ derive_errors <- function(result) {
     obs=result$obs[errors_idx],
     NoChange=result$prob_pred[errors_idx, "NoChange"],
     Change=result$prob_pred[errors_idx, "Change"],
-    feature_idx=result$val_index[errors_idx],
-    fold=rep.int(result$fold, sum(errors_idx))
+    val_idx=result$val_idx[errors_idx],
+    fold=rep.int(result$fold, sum(errors_idx)),
+    error_type=ifelse(result$pred[errors_idx] == "Change", "commission", "omission")
   )
-  
-  errors <- errors %>%
-    mutate(error_type=ifelse(pred == "Change", "commission", "omission")) %>%
-    mutate(shap_idx=row_number())
 }
