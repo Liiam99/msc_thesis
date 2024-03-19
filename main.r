@@ -1,3 +1,7 @@
+library(dplyr)
+library(sf)
+library(treeshap)
+
 # Preprocessing imports
 source("./R/preprocessing/calc-base-features.r")
 source("./R/preprocessing/calc-extra-features.r")
@@ -18,6 +22,8 @@ source("./R/processing/train-random-forest.r")
 source("./R/visualisation/plot-feature-importance-mod.r")
 source("./R/visualisation/visualise-errors.r")
 
+# Utilities
+source("./R/utils/custom-unify.r")
 source("./R/utils/utils.r")
 
 # Select targeted date range (2 years range)
@@ -30,10 +36,22 @@ END = as.Date("2018-6-30")
 # GLOBAL -----------------------------------------------------------------------
 #### PREPROCESSING ####
 reference_data <- load_reference_data()
+original_n <- length(unique(reference_data$location_id))
 
-# Filtering based on methods of Xu et al. (2022).
-# Removes sites with only fraction change between 0 and 70 in any of the years.
+# Burned locations from Google Earth Engine.
+IIASA_burned_path <- "./data/global/raw/IIASA_burned_sample_ids.csv"
+WUR_burned_path <- "./data/global/raw/WUR_burned_location_ids.csv"
+
+
+# Thr thee preprocessing methods based on methods of Xu et al. (2022):
+  # 1. Removes the points labelled burned anywhere from 2015 to 2018.
+IIASA_burned <- read.csv(IIASA_burned_path)
+WUR_burned <- read.csv(WUR_burned_path)
+reference_data <- reference_data[!reference_data$sample_id %in% IIASA_burned$sample_id, ]
+reference_data <- reference_data[!reference_data$location_id %in% WUR_burned$location_id, ]
+  # 2. Removes sites with only fraction change between 0 and 70 in any of the years.
 reference_data <- filter_changes(reference_data)
+  # 3. Removes sites with breaks detected outside the targeted date range.
 reference_data <- remove_sites_with_breaks(reference_data, start=START, end=END)
 
 reference_data <- assign_lcc_categories(reference_data)
@@ -104,7 +122,7 @@ st_write(global_com_errors_sf, "results/global_com_errors.gpkg", append=F)
 global_com_errors_sf <- st_as_sf(x=global_com_errors[global_com_errors$is_drawn == T, ],
                                  coords=c("centroid_x", "centroid_y"),
                                  crs="WGS84")
-st_write(global_com_errors_sf, "results/global_com_errors.kml", append=F)
+st_write(global_com_errors_sf, "results/20_global_com_errors.kml", append=F)
 
 # omission errors = 100 - producer's accuracy
 # errors where the class was not predicted as change but was a change in reality.
@@ -125,7 +143,7 @@ st_write(global_om_errors_sf, "results/global_om_errors.gpkg", append=F)
 global_om_errors_sf <- st_as_sf(x=global_om_errors[global_om_errors$is_drawn == T, ],
                                 coords=c("centroid_x", "centroid_y"),
                                 crs="WGS84")
-st_write(global_om_errors_sf, "results/global_om_errors.kml", append=F)
+st_write(global_om_errors_sf, "results/20_global_om_errors.kml", append=F)
 
 
 
@@ -141,8 +159,8 @@ brazil <- T
 brazil_reference_data <- read.csv("./data/brazil/raw/brazil_reference_data.csv")
 names(brazil_reference_data)[names(brazil_reference_data) == "TARGETID"] <- "location_id"
 brazil_reference_data$is_change <- factor(brazil_reference_data$is_change, 
-                                          levels = c(0, 1), 
-                                          labels = c("NoChange", "Change"))
+                                          levels=c(0, 1), 
+                                          labels=c("NoChange", "Change"))
 
 brazil_reference_data <- remove_sites_with_breaks(brazil_reference_data, start=START, end=END, brazil)
 
@@ -168,10 +186,10 @@ brazil_full_features <- na.omit(brazil_full_features)
 
 
 #### MODELS ####
-# TODO: PICK THE BEST MODEL BASED ON OVERALL ACCURACY?
-best_model <- full_rf_results[[1]]$model
+best_model <- full_rf_results[[which.max(full_rf_metrics["F1_change", ])]]$model
 brazil_pred <- predict(best_model, newdata=brazil_full_features)
 brazil_prob_pred <- predict(best_model, newdata=brazil_full_features, type="prob")
+
 brazil_result <- data.frame(pred=brazil_pred, 
                             obs=brazil_full_features$is_change,
                             val_idx=1:nrow(brazil_full_features),
@@ -182,9 +200,6 @@ brazil_lcc_metrics <- calc_lcc_metrics(brazil_result, brazil_reference_data_cond
 
 
 #### ERROR EXPLORATION ####
-library(dplyr)
-library(treeshap)
-source("./R/utils/custom-unify.r")
 brazil_errors_idx <- brazil_result$pred != brazil_result$obs
 brazil_unified <- custom.unify(best_model, brazil_full_features)
 brazil_errors_shaps <- treeshap(brazil_unified, brazil_full_features[brazil_errors_idx, ])$shaps
@@ -204,12 +219,39 @@ brazil_com_errors <- assess_errors(
   brazil_indices_ts
 )
 
-brazil_com_errors <- assess_errors(
+# For further analysis in QGIS.
+brazil_com_errors_sf <- st_as_sf(x=brazil_com_errors,
+                                 coords=c("centroid_x", "centroid_y"),
+                                 crs="WGS84")
+st_write(brazil_com_errors_sf, "results/brazil_com_errors.gpkg", append=F)
+
+# For further analysis in Google Earth Pro.
+brazil_com_errors_sf <- st_as_sf(x=brazil_com_errors[brazil_com_errors$is_drawn == T, ],
+                                 coords=c("centroid_x", "centroid_y"),
+                                 crs="WGS84")
+st_write(brazil_com_errors_sf, "results/brazil_com_errors.kml", append=F)
+
+brazil_om_errors <- assess_errors(
   brazil_errors[brazil_errors$error_type == "omission", ], 
   brazil_errors_shaps, 
   brazil_full_features,
   brazil_indices_ts
 )
 
+# For further analysis in QGIS.
+brazil_om_errors_sf <- st_as_sf(x=brazil_om_errors,
+                                 coords=c("centroid_x", "centroid_y"),
+                                 crs="WGS84")
+st_write(brazil_om_errors_sf, "results/brazil_om_errors.gpkg", append=F)
+
+# For further analysis in Google Earth Pro.
+brazil_om_errors_sf <- st_as_sf(x=brazil_om_errors[brazil_om_errors$is_drawn == T, ],
+                                 coords=c("centroid_x", "centroid_y"),
+                                 crs="WGS84")
+st_write(brazil_om_errors_sf, "results/brazil_om_errors.kml", append=F)
+
+
+
 #### VISUALISATION ####
-plot_feature_importance_mod(brazil_shaps)
+visualise_errors(brazil_com_errors, brazil_om_errors)
+plot_feature_importance_mod(brazil_errors_shaps)

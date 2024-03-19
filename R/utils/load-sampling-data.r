@@ -80,7 +80,7 @@ ReclassifyAndScale = function(df, output.classes=GetCommonClassNames())
   RelevantClasses = df[, output.classes]
   ClassSums = rowSums(RelevantClasses)
   ZeroRows = ClassSums == 0
-  
+
   if (any(ZeroRows))
   {
     print(paste("Dropping", sum(ZeroRows), "samples because all their relevant fractions are zero"))

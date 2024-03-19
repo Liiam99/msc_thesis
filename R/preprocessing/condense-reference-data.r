@@ -27,7 +27,7 @@ condense_brazil_data <- function(brazil_reference_data) {
     mutate(from=sapply(CLASS_2016, map_class_nr_to_label, class_map)) %>%
     mutate(to=sapply(CLASS_2018, map_class_nr_to_label, class_map)) %>%
     select(location_id, LAT, LON, is_change, from, to) %>%
-    rename(centroid_x=LON, centroid_y=LAT)
+    rename(centroid_x=LAT, centroid_y=LON)
 }
 
 map_class_nr_to_label <- function(class_nr, class_map) {
