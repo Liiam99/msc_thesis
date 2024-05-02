@@ -20,7 +20,9 @@ source("./R/processing/train-random-forest.r")
 
 # Visualisation imports
 source("./R/visualisation/plot-feature-importance-mod.r")
-source("./R/visualisation/visualise-errors.r")
+source("./R/visualisation/visualise-class-changes.r")
+source("./R/visualisation/visualise-obs-counts.r")
+source("./R/visualisation/visualise-pred-probs.r")
 
 # Utilities
 source("./R/utils/custom-unify.r")
@@ -36,14 +38,13 @@ END = as.Date("2018-6-30")
 # GLOBAL -----------------------------------------------------------------------
 #### PREPROCESSING ####
 reference_data <- load_reference_data()
-original_n <- length(unique(reference_data$location_id))
+nrow(reference_data)
 
 # Burned locations from Google Earth Engine.
 IIASA_burned_path <- "./data/global/raw/IIASA_burned_sample_ids.csv"
 WUR_burned_path <- "./data/global/raw/WUR_burned_location_ids.csv"
 
-
-# Thr thee preprocessing methods based on methods of Xu et al. (2022):
+# The thee preprocessing methods based on methods of Xu et al. (2022):
   # 1. Removes the points labelled burned anywhere from 2015 to 2018.
 IIASA_burned <- read.csv(IIASA_burned_path)
 WUR_burned <- read.csv(WUR_burned_path)
@@ -54,8 +55,22 @@ reference_data <- filter_changes(reference_data)
   # 3. Removes sites with breaks detected outside the targeted date range.
 reference_data <- remove_sites_with_breaks(reference_data, start=START, end=END)
 
-reference_data <- assign_lcc_categories(reference_data)
+reference_data <- reference_data %>%
+  group_by(location_id) %>%
+  mutate(
+    from = case_when(
+      reference_year == 2015 ~ dominant_lc,
+      TRUE ~ NA_character_ # If none of the conditions are met, assign NA
+    ),
+    to = case_when(
+      reference_year == 2018 ~ dominant_lc,
+      TRUE ~ NA_character_ # If none of the conditions are met, assign NA
+    )
+  ) %>%
+  ungroup()
+
 reference_data_condensed <- condense_global_data(reference_data)
+reference_data_condensed <- assign_lcc_categories(reference_data_condensed)
 
 # Writes the VI values to files in ./data/global/processed/temporal_indices
 global_SRs <- load_SRs(reference_data_condensed)
@@ -103,6 +118,16 @@ global_errors <- merge(reference_data_condensed, global_errors, by="location_id"
 global_errors_shaps <- lapply(full_rf_results, calc_errors_shaps, full_features)
 global_errors_shaps <- do.call(rbind, global_errors_shaps)
 
+global_shaps <- lapply(full_rf_results, function(result, features) {
+  val_features <- features[result$val_idx, ]
+  
+  unified <- custom.unify(result$model, features)
+  treeshap_obj <- treeshap(unified, val_features)
+  
+  return(treeshap_obj$shaps)
+  }, full_features)
+global_shaps <- do.call(rbind, global_shaps)
+
 # commission errors = 100 - user accuracy
 # errors where the class was predicted as change but was not in reality.
 global_com_errors <- assess_errors(
@@ -149,7 +174,8 @@ st_write(global_om_errors_sf, "results/20_global_om_errors.kml", append=F)
 
 #### VISUALISATION ####
 visualise_errors(global_com_errors, global_om_errors)
-plot_feature_importance_mod(global_errors_shaps)
+plot_feature_importance_mod(brazil_errors_shaps, max_vars=5, title="Feature importance", subtitle="Shapley values for regional RF prediction errors")
+visualise_class_changes(global_errors)
 
 
 
@@ -166,9 +192,9 @@ brazil_reference_data <- remove_sites_with_breaks(brazil_reference_data, start=S
 
 brazil_reference_data_condensed <- condense_brazil_data(brazil_reference_data)
 brazil_reference_data_condensed <- na.omit(brazil_reference_data_condensed)
-brazil_reference_data_condensed <- assign_lcc_categories(brazil_reference_data_condensed, brazil=T)
+brazil_reference_data_condensed <- assign_lcc_categories(brazil_reference_data_condensed)
 
-# Writes the VI values to files in ./data/global/processed/temporal_indices
+# Writes the spectral index values to files in ./data/global/processed/temporal_indices
 brazil_SRs <- load_SRs(brazil_reference_data_condensed, brazil)
 brazil_indices <- calc_temporal_indices(brazil_SRs, brazil)
 
@@ -187,6 +213,7 @@ brazil_full_features <- na.omit(brazil_full_features)
 
 #### MODELS ####
 best_model <- full_rf_results[[which.max(full_rf_metrics["F1_change", ])]]$model
+#cutoff_value <- unname(quantile(vis_preds[vis_preds$type == "TN", "Change"], probs=0.95))
 brazil_pred <- predict(best_model, newdata=brazil_full_features)
 brazil_prob_pred <- predict(best_model, newdata=brazil_full_features, type="prob")
 
@@ -229,7 +256,7 @@ st_write(brazil_com_errors_sf, "results/brazil_com_errors.gpkg", append=F)
 brazil_com_errors_sf <- st_as_sf(x=brazil_com_errors[brazil_com_errors$is_drawn == T, ],
                                  coords=c("centroid_x", "centroid_y"),
                                  crs="WGS84")
-st_write(brazil_com_errors_sf, "results/brazil_com_errors.kml", append=F)
+st_write(brazil_com_errors_sf, "results/20_brazil_com_errors.kml", append=F)
 
 brazil_om_errors <- assess_errors(
   brazil_errors[brazil_errors$error_type == "omission", ], 
@@ -248,10 +275,31 @@ st_write(brazil_om_errors_sf, "results/brazil_om_errors.gpkg", append=F)
 brazil_om_errors_sf <- st_as_sf(x=brazil_om_errors[brazil_om_errors$is_drawn == T, ],
                                  coords=c("centroid_x", "centroid_y"),
                                  crs="WGS84")
-st_write(brazil_om_errors_sf, "results/brazil_om_errors.kml", append=F)
+st_write(brazil_om_errors_sf, "results/20_brazil_om_errors.kml", append=F)
+
+visualise_class_changes(brazil_reference_data_condensed)
 
 
 
 #### VISUALISATION ####
-visualise_errors(brazil_com_errors, brazil_om_errors)
-plot_feature_importance_mod(brazil_errors_shaps)
+helper <- function(result) {
+  result <- data.frame(
+    pred=result$pred,
+    obs=result$obs,
+    NoChange=result$prob_pred[, "NoChange"],
+    Change=result$prob_pred[, "Change"],
+    location_id=result$val_location_id
+  )
+}
+global_preds <- lapply(full_rf_results, helper)
+global_preds <- bind_rows(global_preds)
+visualise_pred_probs(global_preds, "Distribution of global change prediction values per result type")
+
+brazil_preds <- data.frame(
+  pred=brazil_pred,
+  obs=brazil_full_features$is_change,
+  NoChange=brazil_prob_pred[, "NoChange"],
+  Change=brazil_prob_pred[, "Change"],
+  location_id=brazil_full_features$location_id
+)
+visualise_pred_probs(brazil_preds, "Distribution of regional change prediction values per result type")

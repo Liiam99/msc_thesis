@@ -5,6 +5,9 @@ load_SRs <- function(reference_data, brazil=F) {
     brazil_gpkg = "./data/brazil/raw/BrazilChange20152018_Landsat8_TS.gpkg"
     SRNames = st_layers(brazil_gpkg)$name
     SRs = lapply(SRNames, function(name) st_read(brazil_gpkg, layer=name, quiet=T))
+    
+    SRs = lapply(SRs, function(SR) SR[SR$location_id %in% reference_data$location_id,])
+    
     names(SRs) = SRNames
     
     return(SRs)

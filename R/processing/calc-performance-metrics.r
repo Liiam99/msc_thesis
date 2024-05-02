@@ -29,14 +29,14 @@ calc_performance_metrics <- function(result) {
 }
 
 calc_lcc_metrics <- function(result, ref_data) {
-  ref <- ref_data[ref_data$location_id %in% result$val_location_id, c("location_id", "from", "to")]
+  ref <- ref_data[ref_data$location_id %in% result$val_location_id, c("location_id", "from_lcc", "to_lcc")]
   ref <- cbind(ref, pred=result$pred, obs=result$obs)
 
   lccs <- c("forest", "herbaceous_vegetation", "water", "wetland")
   lcc_metrics <- list()
   
   for (lcc in lccs) {
-    lcc_ref <- ref[ref$from == lcc | ref$to == lcc, ]
+    lcc_ref <- ref[ref$from_lcc == lcc | ref$to_lcc == lcc, ]
     accuracies <- calc_performance_metrics(lcc_ref)
     lcc_metrics[[lcc]] <- calc_performance_metrics(lcc_ref)
   }

@@ -19,6 +19,7 @@ load_reference_data <- function() {
   WUR_change <- subset(WUR_change, select= -c(incl.p_com, des_weight))
   WUR_nochange <- read.csv(WUR_nochange_path)
   WUR <- rbind(WUR_change, WUR_nochange)
+  WUR <- subset(WUR, select= -c(burnt, flooded))
   
   # Renames and cleans the WUR data.
   WUR <- RenameReferenceData(WUR)
@@ -30,5 +31,4 @@ load_reference_data <- function() {
   IIASA_subset <- IIASA[common_cols]
   WUR_subset <- WUR[common_cols]
   reference_data <- merge(IIASA_subset, WUR_subset, all=T)
-  reference_data <- subset(reference_data, select= -burnt)
 }

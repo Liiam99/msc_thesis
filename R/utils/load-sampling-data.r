@@ -62,7 +62,7 @@ ReclassifyAndScale = function(df, output.classes=GetCommonClassNames())
   # Some classes are merged to other classes. Put the values into the bigger classes
   ClassMap = c(burnt="grassland",
                fallow_shifting_cultivation="crops",
-               flooded_vegetation="wetland_herbaceous",
+               flooded="wetland_herbaceous",
                lichen_and_moss="grassland",
                lichen="grassland",
                fl.grass="wetland_herbaceous",

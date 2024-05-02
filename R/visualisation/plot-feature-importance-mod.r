@@ -20,9 +20,15 @@ plot_feature_importance_mod <- function (shaps, desc_sorting=TRUE, max_vars=ncol
                                                              1, -1))
   df <- df[order(df$importance, decreasing = TRUE)[1:max_vars], 
   ]
-  p <- ggplot(df, aes(x = variable, y = importance)) + geom_bar(stat = "identity", 
-                                                                fill = colors_discrete_drwhy(1))
-  p + coord_flip() + theme_drwhy_vertical() + ylab("mean(|SHAP value|)") + 
-    xlab("") + labs(title = title, subtitle = subtitle) + 
-    scale_y_continuous(labels = scales::comma) + theme(legend.position = "none")
+  p <- ggplot(df, aes(x = variable, y = importance)) + 
+    geom_bar(stat = "identity")
+  
+  p + coord_flip() + 
+    theme_drwhy_vertical() + 
+    ylab("mean(|SHAP value|)") + 
+    xlab("") + 
+    labs(title = title, subtitle = subtitle) + 
+    scale_y_continuous(labels = scales::comma) + 
+    theme(legend.position = "none") +
+    theme_minimal(base_size=27)
 }

@@ -6,11 +6,12 @@ library(tibble)
 library(zoo)
 
 calc_base_features <- function(reference_data, start, end) {
-  VI_names = c("NDVI", "NIRv", "NDMI", "EVI", "MNDWI")
+  VI_names = c("NIRv")
   
   l <- expand.grid(VIname=VI_names, segment_size=6, stringsAsFactors=FALSE)
   RollingStats = do.call(mcmapply, c(FUN=calc_segments_sums_of_changes, as.list(l), start=start, end=end, mc.cores=10))
-
+  
+  return(RollingStats)
   # Creates a list of data frames of VIs.
   VIs <- split_matrix(RollingStats)
   
@@ -43,7 +44,8 @@ calc_segments_sums_of_changes <- function(VIname, start, end, segment_size=6, In
 
 calc_segment_sum_of_change <- function(values_with_dates) {
   values = unname(values_with_dates)
-  values = na.omit(values)
+  values = sum(!is.na(values))
+  return(values)
   
   if (length(values) < 2)
   {

@@ -102,39 +102,16 @@ remove_sites_with_breaks <- function(reference_data, start, end, brazil=F) {
   reference_data <- reference_data[!reference_data$location_id %in% locations_with_breaks, ]
 }
 
-assign_lcc_categories <- function(reference_data, brazil=F) {
+assign_lcc_categories <- function(reference_data) {
   lcc_map <- c(crops="herbaceous_vegetation",
                grassland="herbaceous_vegetation",
                tree="forest",
                wetland_herbaceous="wetland",
-               water="water",
-               bare="bare",
-               urban_built_up="urban",
-               shrub="shrub")
+               water="water"
+               )
   
-  if (brazil) {
-    reference_data$from <- lcc_map[reference_data$from]
-    reference_data$to <- lcc_map[reference_data$to]
-    
-    return(reference_data)
-  }
-    
+  reference_data$from_lcc <- lcc_map[reference_data$from]
+  reference_data$to_lcc <- lcc_map[reference_data$to]
   
-  reference_data <- reference_data %>%
-    group_by(location_id) %>%
-    mutate(
-      from = ifelse(
-        reference_year == 2015,
-        lcc_map[levels(dominant_lc)[dominant_lc]],
-        NA
-      )
-    ) %>%
-    mutate(
-      to = ifelse(
-        reference_year == 2018,
-        lcc_map[levels(dominant_lc)[dominant_lc]],
-        NA
-      )
-    ) %>%
-    ungroup()
+  return(reference_data)
 }

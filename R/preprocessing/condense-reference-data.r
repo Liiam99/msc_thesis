@@ -20,14 +20,20 @@ condense_brazil_data <- function(brazil_reference_data) {
     tree=c(1, 3, 49, 9),
     urban_built_up=c(24),
     water=c(26, 31, 33),
-    wetland_herbaceous=c(5, 6, 11, 32)
+    wetland_herbaceous=c(5, 6, 11, 32, 50)
   )
+  
+  # brazil_reference_data_condensed <- brazil_reference_data %>%
+  #   mutate(from=sapply(CLASS_2016, map_class_nr_to_label, class_map)) %>%
+  #   mutate(to=sapply(CLASS_2018, map_class_nr_to_label, class_map)) %>%
+  #   select(location_id, LAT, LON, is_change, from, to) %>%
+  #   rename(centroid_x=LAT, centroid_y=LON)
 
   brazil_reference_data_condensed <- brazil_reference_data %>%
-    mutate(from=sapply(CLASS_2016, map_class_nr_to_label, class_map)) %>%
-    mutate(to=sapply(CLASS_2018, map_class_nr_to_label, class_map)) %>%
+    mutate(from=CLASS_2016) %>%
+    mutate(to=CLASS_2018) %>%
     select(location_id, LAT, LON, is_change, from, to) %>%
-    rename(centroid_x=LAT, centroid_y=LON)
+    rename(centroid_x=LON, centroid_y=LAT)
 }
 
 map_class_nr_to_label <- function(class_nr, class_map) {
