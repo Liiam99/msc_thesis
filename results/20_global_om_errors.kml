@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="20_global_om_errors" id="20_global_om_errors">
+	<SimpleField name="location_id" type="int"></SimpleField>
+	<SimpleField name="sample_id" type="int"></SimpleField>
+	<SimpleField name="is_change" type="string"></SimpleField>
+	<SimpleField name="from" type="string"></SimpleField>
+	<SimpleField name="to" type="string"></SimpleField>
+	<SimpleField name="from_lcc" type="string"></SimpleField>
+	<SimpleField name="to_lcc" type="string"></SimpleField>
+	<SimpleField name="pred" type="string"></SimpleField>
+	<SimpleField name="obs" type="string"></SimpleField>
+	<SimpleField name="NoChange" type="float"></SimpleField>
+	<SimpleField name="Change" type="float"></SimpleField>
+	<SimpleField name="val_idx" type="int"></SimpleField>
+	<SimpleField name="fold" type="int"></SimpleField>
+	<SimpleField name="error_type" type="string"></SimpleField>
+	<SimpleField name="shap_idx" type="int"></SimpleField>
+	<SimpleField name="is_drawn" type="int"></SimpleField>
+</Schema>
+<Folder><name>20_global_om_errors</name>
+  <Placemark>
+	<name>2761517</name>
+	<description>1368920</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.8984375</SimpleData>
+		<SimpleData name="obs">0.1015625</SimpleData>
+		<SimpleData name="NoChange">5857</SimpleData>
+		<SimpleData name="Change">10</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1702</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.86187299,0.422877835</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2761695</name>
+	<description>1369098</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">wetland_herbaceous</SimpleData>
+		<SimpleData name="from">water</SimpleData>
+		<SimpleData name="to">wetland</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.6640625</SimpleData>
+		<SimpleData name="obs">0.3359375</SimpleData>
+		<SimpleData name="NoChange">5969</SimpleData>
+		<SimpleData name="Change">8</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1341</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>35.65861606,-15.12019166</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2765642</name>
+	<description>1373043</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">shrub</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.890625</SimpleData>
+		<SimpleData name="obs">0.109375</SimpleData>
+		<SimpleData name="NoChange">7906</SimpleData>
+		<SimpleData name="Change">10</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1722</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>140.5345963,-7.484623113</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2766103</name>
+	<description>1373504</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">shrub</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.828125</SimpleData>
+		<SimpleData name="obs">0.171875</SimpleData>
+		<SimpleData name="NoChange">8194</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">50</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>117.0588771,1.249883732</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2766465</name>
+	<description>1373866</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">shrub</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.5703125</SimpleData>
+		<SimpleData name="obs">0.4296875</SimpleData>
+		<SimpleData name="NoChange">8437</SimpleData>
+		<SimpleData name="Change">2</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">242</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>110.0145831,0.679804081</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2766958</name>
+	<description>1374359</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.5</SimpleData>
+		<SimpleData name="obs">0.5</SimpleData>
+		<SimpleData name="NoChange">8768</SimpleData>
+		<SimpleData name="Change">5</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">825</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>140.8845647,-6.99818692</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2767714</name>
+	<description>1375115</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">bare</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.734375</SimpleData>
+		<SimpleData name="obs">0.265625</SimpleData>
+		<SimpleData name="NoChange">9212</SimpleData>
+		<SimpleData name="Change">9</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1587</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-118.644236,39.75763182</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2769103</name>
+	<description>1376504</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">water</SimpleData>
+		<SimpleData name="to">water</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.734375</SimpleData>
+		<SimpleData name="obs">0.265625</SimpleData>
+		<SimpleData name="NoChange">9870</SimpleData>
+		<SimpleData name="Change">3</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">462</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-118.6656309,39.77354374</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2773466</name>
+	<description>1380867</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.859375</SimpleData>
+		<SimpleData name="obs">0.140625</SimpleData>
+		<SimpleData name="NoChange">11045</SimpleData>
+		<SimpleData name="Change">4</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">661</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>106.8371135,21.00275495</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2803608</name>
+	<description>1429104</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">water</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">water</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.875</SimpleData>
+		<SimpleData name="obs">0.125</SimpleData>
+		<SimpleData name="NoChange">25038</SimpleData>
+		<SimpleData name="Change">7</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1236</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-120.6943831,40.71385735</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2803868</name>
+	<description>1429364</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.8671875</SimpleData>
+		<SimpleData name="obs">0.1328125</SimpleData>
+		<SimpleData name="NoChange">25117</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">103</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-115.3497001,36.10314816</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2804688</name>
+	<description>1430184</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">water</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.96875</SimpleData>
+		<SimpleData name="obs">0.03125</SimpleData>
+		<SimpleData name="NoChange">25409</SimpleData>
+		<SimpleData name="Change">7</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1243</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-38.55352275,-5.560587469</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2804771</name>
+	<description>1430267</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">bare</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.9453125</SimpleData>
+		<SimpleData name="obs">0.0546875</SimpleData>
+		<SimpleData name="NoChange">25433</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">113</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.28944816,-37.8609458</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2804962</name>
+	<description>1430458</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">water</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.546875</SimpleData>
+		<SimpleData name="obs">0.453125</SimpleData>
+		<SimpleData name="NoChange">25548</SimpleData>
+		<SimpleData name="Change">7</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1247</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.48460785,18.42900688</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2805860</name>
+	<description>1431595</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.9765625</SimpleData>
+		<SimpleData name="obs">0.0234375</SimpleData>
+		<SimpleData name="NoChange">26113</SimpleData>
+		<SimpleData name="Change">5</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">894</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-98.54098262,22.09171579</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2806093</name>
+	<description>1431828</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">water</SimpleData>
+		<SimpleData name="to">water</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.6484375</SimpleData>
+		<SimpleData name="obs">0.3515625</SimpleData>
+		<SimpleData name="NoChange">26227</SimpleData>
+		<SimpleData name="Change">6</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1089</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>77.53167641,51.04833748</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2807340</name>
+	<description>1433075</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">wetland_herbaceous</SimpleData>
+		<SimpleData name="from">wetland</SimpleData>
+		<SimpleData name="to">wetland</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.703125</SimpleData>
+		<SimpleData name="obs">0.296875</SimpleData>
+		<SimpleData name="NoChange">27028</SimpleData>
+		<SimpleData name="Change">8</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1466</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.06687977,45.62392971</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2807397</name>
+	<description>1433132</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">water</SimpleData>
+		<SimpleData name="from">water</SimpleData>
+		<SimpleData name="to">water</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.5078125</SimpleData>
+		<SimpleData name="obs">0.4921875</SimpleData>
+		<SimpleData name="NoChange">27070</SimpleData>
+		<SimpleData name="Change">10</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1832</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.28135247,42.95314459</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2807863</name>
+	<description>1433598</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">bare</SimpleData>
+		<SimpleData name="from">water</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.6015625</SimpleData>
+		<SimpleData name="obs">0.3984375</SimpleData>
+		<SimpleData name="NoChange">27388</SimpleData>
+		<SimpleData name="Change">7</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1291</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>47.70139337,43.84450481</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>2808412</name>
+	<description>1434146</description>
+	<ExtendedData><SchemaData schemaUrl="#20_global_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="sample_id">0</SimpleData>
+		<SimpleData name="is_change">bare</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">0.5703125</SimpleData>
+		<SimpleData name="obs">0.4296875</SimpleData>
+		<SimpleData name="NoChange">27721</SimpleData>
+		<SimpleData name="Change">8</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="fold">1481</SimpleData>
+		<SimpleData name="error_type">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>104.4409166,30.31794978</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>

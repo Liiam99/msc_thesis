@@ -1,9 +1,18 @@
 source("./R/preprocessing/old-calc-base-features.r")
+source("./R/utils/utils.r")
 
-# Calculating average NAs per segment for old method.
-base_features <- calc_base_features(reference_data_condensed, START, END)
-base_features <- split_matrix(base_features)
+#### Calculating average NAs per segment for old method. ####
+base_features <- old_calc_base_features(reference_data_condensed, START, END)
 means <- colMeans(base_features$NIRv)
+
+# Retrieves the begin date and end date of each segment to label them.
+names(means) <- rollapply(global_indices_ts$NIRv[, 1], width=6, function(x) { 
+  dates <- names(x)
+  begin_date <- dates[1]
+  end_date <- dates[length(dates)]
+  date_range <- gsub("X", "", paste(begin_date, "-", end_date))
+  return(date_range)
+  }, by=6, partial=TRUE, align="left")
 
 # Convert means to a dataframe
 means_df <- data.frame(Column = names(means), Mean = means)
@@ -19,21 +28,23 @@ combined_df <- merge(means_df, difference_df, by = "Column")
 
 # Create barplot using ggplot2
 ggplot(combined_df, aes(x = Column, y = Mean)) +
+  coord_flip() +
   geom_bar(aes(y = Mean + Difference), data = combined_df, stat = "identity", fill = "#F8766D") +
   geom_bar(stat = "identity", fill = "#00BA38") +
-  labs(x = "Segments", y = "Mean number of observations", title = "Mean number of complete and missing observations per segment") +
+  labs(x = "Segments", y = "Mean number of observations", title = "") +
   ylim(0,6) +
-  theme_minimal(base_size=27)
+  theme_minimal(base_size=27) +
+  scale_x_discrete(limits=rev)
 
 
 
-# Number of NAs per prediction type
+#### Number of NAs per prediction type ####
 visualise_obs_counts(global_preds, global_indices_ts$NDVI)
 visualise_obs_counts(brazil_preds, brazil_indices_ts$NDVI)
 
 
 
-# Combined SHAP feature contribution
+#### Combined SHAP feature contribution ####
 df1 <- brazil_shaps
 df2 <- global_shaps
 
@@ -72,19 +83,3 @@ p + coord_flip() +
     "global" = "#77bf77",
     "regional" = "#d4a75e"
   ))
-
-
-
-# Feature importance for wetlands..
-wetland_ids <- reference_data_condensed[reference_data_condensed$from_lcc == "wetland" | reference_data_condensed$to_lcc == "wetland", "location_id"]
-wetland_ids <- na.omit(wetland_ids)
-wetland_rows <- lapply(full_rf_results, function(result, features) {
-  val_features <- features[result$val_idx, ]
-  lol <- val_features$location_id %in% wetland_ids$location_id
-  return(lol)
-}, full_features)
-
-wetland_rows_idx <- do.call(c, wetland_rows)
-
-wetland_shaps <- global_shaps[wetland_rows_idx, ]
-plot_feature_importance_mod(wetland_shaps)

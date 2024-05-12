@@ -5,15 +5,16 @@ library(sf)
 library(tibble)
 library(zoo)
 
-calc_base_features <- function(reference_data, start, end) {
+old_calc_base_features <- function(reference_data, start, end) {
   VI_names = c("NIRv")
   
   l <- expand.grid(VIname=VI_names, segment_size=6, stringsAsFactors=FALSE)
   RollingStats = do.call(mcmapply, c(FUN=calc_segments_sums_of_changes, as.list(l), start=start, end=end, mc.cores=10))
   
-  return(RollingStats)
   # Creates a list of data frames of VIs.
   VIs <- split_matrix(RollingStats)
+  
+  return(VIs)
   
   # Calculates the yearly change of the three proposed metrics per VI.
   VI_metrics <- lapply(VIs, calc_yearly_change_stats)

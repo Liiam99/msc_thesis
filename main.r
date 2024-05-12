@@ -172,13 +172,6 @@ st_write(global_om_errors_sf, "results/20_global_om_errors.kml", append=F)
 
 
 
-#### VISUALISATION ####
-visualise_errors(global_com_errors, global_om_errors)
-plot_feature_importance_mod(brazil_errors_shaps, max_vars=5, title="Feature importance", subtitle="Shapley values for regional RF prediction errors")
-visualise_class_changes(global_errors)
-
-
-
 # BRAZIL -----------------------------------------------------------------------
 #### PREPROCESSING ####
 brazil <- T
@@ -213,7 +206,6 @@ brazil_full_features <- na.omit(brazil_full_features)
 
 #### MODELS ####
 best_model <- full_rf_results[[which.max(full_rf_metrics["F1_change", ])]]$model
-#cutoff_value <- unname(quantile(vis_preds[vis_preds$type == "TN", "Change"], probs=0.95))
 brazil_pred <- predict(best_model, newdata=brazil_full_features)
 brazil_prob_pred <- predict(best_model, newdata=brazil_full_features, type="prob")
 
@@ -281,19 +273,37 @@ visualise_class_changes(brazil_reference_data_condensed)
 
 
 
-#### VISUALISATION ####
-helper <- function(result) {
+# VISUALISATION ----------------------------------------------------------------
+# Exports to create the overview maps showing the number of changes and classes.
+global_points <- st_as_sf(x=reference_data_condensed,
+                          coords=c("centroid_x", "centroid_y"),
+                          crs="WGS84")
+st_write(global_points, "results/global_points.gpkg", append=F)
+regional_points <- st_as_sf(x=brazil_reference_data_condensed,
+                          coords=c("centroid_x", "centroid_y"),
+                          crs="WGS84")
+st_write(regional_points, "results/regional_points.gpkg", append=F)
+
+#### Sankey diagrams showing the class transitions in the datasets.####
+visualise_class_changes(reference_data_condensed)
+visualise_class_changes(brazil_reference_data_condensed)
+
+#### Sankey diagrams showing the class transitions of the omission errors.####
+visualise_class_changes(global_om_errors)
+visualise_class_changes(brazil_om_errors)
+
+#### Histograms of the relative frequency of the change probability prediction values per result type ####
+global_preds <- lapply(full_rf_results, function(result) {
   result <- data.frame(
     pred=result$pred,
     obs=result$obs,
     NoChange=result$prob_pred[, "NoChange"],
     Change=result$prob_pred[, "Change"],
     location_id=result$val_location_id
-  )
-}
-global_preds <- lapply(full_rf_results, helper)
+  )}
+)
 global_preds <- bind_rows(global_preds)
-visualise_pred_probs(global_preds, "Distribution of global change prediction values per result type")
+visualise_pred_probs(global_preds, "")
 
 brazil_preds <- data.frame(
   pred=brazil_pred,
@@ -302,4 +312,9 @@ brazil_preds <- data.frame(
   Change=brazil_prob_pred[, "Change"],
   location_id=brazil_full_features$location_id
 )
-visualise_pred_probs(brazil_preds, "Distribution of regional change prediction values per result type")
+visualise_pred_probs(brazil_preds, "")
+
+#### Examples of time series ####
+par(cex=2)
+plot(global_indices_ts$NIRv[, names(global_indices_ts$NIRv) == 2768185], ylab="NIRv", main="NIRv time series of a true positive", xlab="Date", sub="Change probability prediction value = 1")
+plot(global_indices_ts$NIRv[, names(global_indices_ts$NIRv) == 2781020], ylab="NIRv", main="NIRv time series of a false negative", xlab="Date", sub="Change probability prediction value = 0")

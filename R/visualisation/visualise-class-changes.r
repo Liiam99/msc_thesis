@@ -34,5 +34,5 @@ visualise_class_changes <- function(data) {
       "wetland_herbaceous" = "#83c0c2",
       "water" = "#3876d9"
     )) +
-    labs(x = "Regional Land Cover Changes")
+    labs(x = "Regional land cover change omission errors")
 }

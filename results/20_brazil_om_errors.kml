@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="20_brazil_om_errors" id="20_brazil_om_errors">
+	<SimpleField name="location_id" type="int"></SimpleField>
+	<SimpleField name="is_change" type="string"></SimpleField>
+	<SimpleField name="from" type="string"></SimpleField>
+	<SimpleField name="to" type="string"></SimpleField>
+	<SimpleField name="from_lcc" type="string"></SimpleField>
+	<SimpleField name="to_lcc" type="string"></SimpleField>
+	<SimpleField name="pred" type="string"></SimpleField>
+	<SimpleField name="obs" type="string"></SimpleField>
+	<SimpleField name="val_idx" type="int"></SimpleField>
+	<SimpleField name="val_location_id" type="int"></SimpleField>
+	<SimpleField name="error_type" type="string"></SimpleField>
+	<SimpleField name="shap_idx" type="int"></SimpleField>
+	<SimpleField name="Change" type="float"></SimpleField>
+	<SimpleField name="NoChange" type="float"></SimpleField>
+	<SimpleField name="is_drawn" type="int"></SimpleField>
+</Schema>
+<Folder><name>20_brazil_om_errors</name>
+  <Placemark>
+	<name>11074</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">1623</SimpleData>
+		<SimpleData name="obs">11074</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">23</SimpleData>
+		<SimpleData name="error_type">0.1796875</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-40.78067745,-15.79256021</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>16766</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">tree</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">forest</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">2445</SimpleData>
+		<SimpleData name="obs">16766</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">30</SimpleData>
+		<SimpleData name="error_type">0.03125</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-43.50769315,-3.526514162</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>28803</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">4485</SimpleData>
+		<SimpleData name="obs">28803</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">47</SimpleData>
+		<SimpleData name="error_type">0.078125</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-67.47869752,-9.603617059</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>41203</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">water</SimpleData>
+		<SimpleData name="from">wetland</SimpleData>
+		<SimpleData name="to">water</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">7305</SimpleData>
+		<SimpleData name="obs">41203</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">66</SimpleData>
+		<SimpleData name="error_type">0.0859375</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-57.32764498,-17.01283169</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>44689</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">7972</SimpleData>
+		<SimpleData name="obs">44689</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">74</SimpleData>
+		<SimpleData name="error_type">0.1171875</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-50.07365923,-3.489323909</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>50349</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">8779</SimpleData>
+		<SimpleData name="obs">50349</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">105</SimpleData>
+		<SimpleData name="error_type">0.0625</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-51.77201411,-6.387468678</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>51849</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">9077</SimpleData>
+		<SimpleData name="obs">51849</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">113</SimpleData>
+		<SimpleData name="error_type">0.4609375</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-55.4252827,-11.39360009</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>53985</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">crops</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">9460</SimpleData>
+		<SimpleData name="obs">53985</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">116</SimpleData>
+		<SimpleData name="error_type">0.171875</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-52.34064768,-13.8570501</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>61132</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">crops</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">10288</SimpleData>
+		<SimpleData name="obs">61132</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">128</SimpleData>
+		<SimpleData name="error_type">0.0546875</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-53.27956681,-22.34047015</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>61333</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">crops</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">10324</SimpleData>
+		<SimpleData name="obs">61333</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">129</SimpleData>
+		<SimpleData name="error_type">0.0625</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-52.88664371,-17.48741165</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>61410</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">tree</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">forest</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">10341</SimpleData>
+		<SimpleData name="obs">61410</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">130</SimpleData>
+		<SimpleData name="error_type">0.0234375</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-53.59622295,-2.275250802</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>65162</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">wetland_herbaceous</SimpleData>
+		<SimpleData name="from">wetland</SimpleData>
+		<SimpleData name="to">wetland</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">10921</SimpleData>
+		<SimpleData name="obs">65162</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">137</SimpleData>
+		<SimpleData name="error_type">0.015625</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-57.48179588,-19.58003711</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>67436</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">11264</SimpleData>
+		<SimpleData name="obs">67436</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">142</SimpleData>
+		<SimpleData name="error_type">0.296875</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-61.50346358,-12.34949739</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>72222</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">crops</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">12276</SimpleData>
+		<SimpleData name="obs">72222</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">157</SimpleData>
+		<SimpleData name="error_type">0.0078125</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-54.59308342,-29.90841709</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>78730</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">tree</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">forest</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">13361</SimpleData>
+		<SimpleData name="obs">78730</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">180</SimpleData>
+		<SimpleData name="error_type">0.0703125</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-45.87331662,-21.30857538</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>80684</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">crops</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">13682</SimpleData>
+		<SimpleData name="obs">80684</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">188</SimpleData>
+		<SimpleData name="error_type">0.203125</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-50.31189244,-8.833671029</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>82086</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">crops</SimpleData>
+		<SimpleData name="from">herbaceous_vegetation</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">13911</SimpleData>
+		<SimpleData name="obs">82086</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">194</SimpleData>
+		<SimpleData name="error_type">0.0078125</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-50.08228306,-9.285343953</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>84138</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">crops</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">14303</SimpleData>
+		<SimpleData name="obs">84138</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">200</SimpleData>
+		<SimpleData name="error_type">0.0390625</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-51.63133793,-24.91926383</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>84278</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">14326</SimpleData>
+		<SimpleData name="obs">84278</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">201</SimpleData>
+		<SimpleData name="error_type">0.0703125</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-51.50521447,-24.69989524</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>84952</name>
+	<description>Change</description>
+	<ExtendedData><SchemaData schemaUrl="#20_brazil_om_errors">
+		<SimpleData name="location_id">0</SimpleData>
+		<SimpleData name="is_change">grassland</SimpleData>
+		<SimpleData name="from">forest</SimpleData>
+		<SimpleData name="to">herbaceous_vegetation</SimpleData>
+		<SimpleData name="from_lcc">NoChange</SimpleData>
+		<SimpleData name="to_lcc">Change</SimpleData>
+		<SimpleData name="pred">14448</SimpleData>
+		<SimpleData name="obs">84952</SimpleData>
+		<SimpleData name="val_idx">0</SimpleData>
+		<SimpleData name="val_location_id">203</SimpleData>
+		<SimpleData name="error_type">0.1328125</SimpleData>
+		<SimpleData name="shap_idx">0</SimpleData>
+		<SimpleData name="Change">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-52.01240328,-30.3953938</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>

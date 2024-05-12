@@ -43,9 +43,9 @@ visualise_obs_counts <- function(preds, time_series) {
 
   ggplot(data, aes(x = Type, y = Count, fill = Type)) +
     geom_boxplot() +
-    labs(title = "Counts of cloud-free regional observations per prediction type",
+    labs(title = "",
          x = "Prediction type",
-         y = "Number of cloud-free regional observations") +
+         y = "Number of cloud-free global observations") +
     scale_fill_manual(values = c("#F8766D", "#619CFF", "#00BA38", "#C77CFF")) +
     theme_minimal(base_size=27)
 }
